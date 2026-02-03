@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="py-16 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-4xl font-bold text-center mb-12">Help & FAQ</h1>
+        
+        <div class="space-y-6">
+            <div class="bg-gray-50 p-6 rounded-lg">
+                <h3 class="text-lg font-semibold mb-2">How do I create an account?</h3>
+                <p class="text-gray-600">Click on the "Register" link in the navigation bar and fill out the registration form with your details.</p>
+            </div>
+            
+            <div class="bg-gray-50 p-6 rounded-lg">
+                <h3 class="text-lg font-semibold mb-2">How do I add items to my cart?</h3>
+                <p class="text-gray-600">Browse our products and click the "Add to Cart" button on any product you like. The cart icon will show the number of items.</p>
+            </div>
+            
+            <div class="bg-gray-50 p-6 rounded-lg">
+                <h3 class="text-lg font-semibold mb-2">How do I use the wishlist?</h3>
+                <p class="text-gray-600">Click the heart icon next to any product to add it to your wishlist. You can view all your saved items on the wishlist page.</p>
+            </div>
+            
+            <div class="bg-gray-50 p-6 rounded-lg">
+                <h3 class="text-lg font-semibold mb-2">How does the search work?</h3>
+                <p class="text-gray-600">Use the search bar in the navigation to search for products by name or description. Results will appear instantly.</p>
+            </div>
+            
+            <div class="bg-gray-50 p-6 rounded-lg">
+                <h3 class="text-lg font-semibold mb-2">What is the dynamic theming?</h3>
+                <p class="text-gray-600">Our site features a unique color-changing theme that cycles through beautiful color palettes every 10 seconds for a fresh experience.</p>
+            </div>
+            
+            <div class="bg-gray-50 p-6 rounded-lg">
+                <h3 class="text-lg font-semibold mb-2">How do I contact customer support?</h3>
+                <p class="text-gray-600">Visit our Contact page to send us a message, or email us at info@velorastore.com. We're here to help!</p>
+            </div>
+            
+            <div class="bg-gray-50 p-6 rounded-lg">
+                <h3 class="text-lg font-semibold mb-2">What payment methods do you accept?</h3>
+                <p class="text-gray-600">We accept all major credit cards, PayPal, and other secure payment methods. All transactions are encrypted and secure.</p>
+            </div>
+            
+            <div class="bg-gray-50 p-6 rounded-lg">
+                <h3 class="text-lg font-semibold mb-2">How long does shipping take?</h3>
+                <p class="text-gray-600">Standard shipping takes 3-5 business days. Express shipping is available for faster delivery. Check your order confirmation for exact dates.</p>
+            </div>
+        </div>
+        
+        <div class="mt-12 text-center">
+            <h2 class="text-2xl font-semibold mb-4">Still need help?</h2>
+            <p class="text-gray-600 mb-6">Can't find what you're looking for? Our customer support team is here to help.</p>
+            <a href="{{ url_for('contact') }}" class="bg-primary text-white px-8 py-3 rounded-full hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105">Contact Support</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

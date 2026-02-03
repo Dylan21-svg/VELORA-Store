@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="relative h-screen overflow-hidden" id="hero">
+    <div class="absolute inset-0 bg-gradient-to-r from-black to-transparent z-10"></div>
+    <div class="hero-slider absolute inset-0">
+        <div class="hero-slide active" style="background-image: url('/static/images/hero1.jpg');"></div>
+        <div class="hero-slide" style="background-image: url('/static/images/hero2.jpg');"></div>
+        <div class="hero-slide" style="background-image: url('/static/images/hero3.jpg');"></div>
+    </div>
+    <div class="relative z-20 flex items-center justify-center h-full text-white">
+        <div class="text-center transform translate-y-0 opacity-100 transition-all duration-1000" id="hero-content">
+            <h1 class="text-6xl font-bold mb-4">Welcome to Velora</h1>
+            <p class="text-xl mb-8">Premium fashion for the modern lifestyle</p>
+            <a href="{{ url_for('shop') }}" class="bg-primary text-white px-8 py-3 rounded-full hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105">Shop Now</a>
+        </div>
+    </div>
+</section>
+
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-center mb-12">Featured Products</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" id="featured-products">
+            {% for product in products %}
+            <div class="product-card bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}" class="w-full h-64 object-cover">
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold mb-2">{{ product.name }}</h3>
+                    <p class="text-primary font-bold">${{ "%.2f"|format(product.price) }}</p>
+                    <div class="flex space-x-2 mt-4">
+                        <button onclick="addToCart({{ product.id }})" class="flex-1 bg-primary text-white py-2 rounded hover:bg-opacity-80 transition-colors">Add to Cart</button>
+                        {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('add_to_wishlist', id=product.id) }}" class="bg-gray-200 text-gray-700 px-3 py-2 rounded hover:bg-gray-300 transition-colors">
+                                <i class="fas fa-heart"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

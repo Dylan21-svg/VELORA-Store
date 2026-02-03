@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="py-16 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-4xl font-bold text-center mb-12">About Velora Store</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div>
+                <h2 class="text-2xl font-semibold mb-4">Premium Fashion for Modern Lifestyles</h2>
+                <p class="text-gray-600 mb-4">
+                    Velora Store is your destination for premium fashion that combines style, quality, and innovation. 
+                    We curate the finest collection of clothing, accessories, and lifestyle products to help you express your unique personality.
+                </p>
+                <p class="text-gray-600 mb-4">
+                    Our dynamic theming system and cutting-edge animations create an immersive shopping experience unlike any other. 
+                    Every visit brings something new and exciting.
+                </p>
+                <p class="text-gray-600">
+                    Join thousands of satisfied customers who trust Velora Store for their fashion needs. 
+                    We're not just selling products – we're helping you tell your story through style.
+                </p>
+            </div>
+            <div>
+                <img src="/static/images/default.jpg" alt="About Velora" class="w-full h-96 object-cover rounded-lg shadow-lg">
+            </div>
+        </div>
+        
+        <div class="mt-16 text-center">
+            <h2 class="text-2xl font-semibold mb-8">Why Choose Velora?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <i class="fas fa-shield-alt text-3xl text-primary mb-4"></i>
+                    <h3 class="text-lg font-semibold mb-2">Quality Assurance</h3>
+                    <p class="text-gray-600">Every product undergoes rigorous quality checks to ensure you receive only the best.</p>
+                </div>
+                <div>
+                    <i class="fas fa-truck text-3xl text-primary mb-4"></i>
+                    <h3 class="text-lg font-semibold mb-2">Fast Delivery</h3>
+                    <p class="text-gray-600">Quick and reliable shipping to get your orders to you as fast as possible.</p>
+                </div>
+                <div>
+                    <i class="fas fa-headset text-3xl text-primary mb-4"></i>
+                    <h3 class="text-lg font-semibold mb-2">24/7 Support</h3>
+                    <p class="text-gray-600">Our customer service team is always ready to help with any questions or concerns.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

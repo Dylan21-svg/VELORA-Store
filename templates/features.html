@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-4xl font-bold text-center mb-12">Features</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-gray-50 p-6 rounded-lg text-center">
+                <i class="fas fa-palette text-4xl text-primary mb-4"></i>
+                <h3 class="text-xl font-semibold mb-2">Dynamic Theming</h3>
+                <p>Experience our unique color-changing theme that cycles through beautiful palettes every 10 seconds.</p>
+            </div>
+            <div class="bg-gray-50 p-6 rounded-lg text-center">
+                <i class="fas fa-images text-4xl text-primary mb-4"></i>
+                <h3 class="text-xl font-semibold mb-2">Hero Slider</h3>
+                <p>Stunning auto-sliding hero images with smooth transitions and parallax effects.</p>
+            </div>
+            <div class="bg-gray-50 p-6 rounded-lg text-center">
+                <i class="fas fa-shopping-cart text-4xl text-primary mb-4"></i>
+                <h3 class="text-xl font-semibold mb-2">Smart Cart</h3>
+                <p>Session-based shopping cart with real-time count updates and seamless checkout.</p>
+            </div>
+            <div class="bg-gray-50 p-6 rounded-lg text-center">
+                <i class="fas fa-search text-4xl text-primary mb-4"></i>
+                <h3 class="text-xl font-semibold mb-2">Advanced Search</h3>
+                <p>Powerful search functionality to find products by name or description instantly.</p>
+            </div>
+            <div class="bg-gray-50 p-6 rounded-lg text-center">
+                <i class="fas fa-heart text-4xl text-primary mb-4"></i>
+                <h3 class="text-xl font-semibold mb-2">Wishlist</h3>
+                <p>Save your favorite products to your personal wishlist for easy access.</p>
+            </div>
+            <div class="bg-gray-50 p-6 rounded-lg text-center">
+                <i class="fas fa-mobile-alt text-4xl text-primary mb-4"></i>
+                <h3 class="text-xl font-semibold mb-2">Responsive Design</h3>
+                <p>Perfect shopping experience on desktop, tablet, and mobile devices.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-4xl font-bold text-center mb-12">Admin Dashboard</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div class="bg-primary text-white p-6 rounded-lg text-center">
+                <h3 class="text-2xl font-bold">{{ total_products }}</h3>
+                <p>Total Products</p>
+            </div>
+            <div class="bg-primary text-white p-6 rounded-lg text-center">
+                <h3 class="text-2xl font-bold">{{ total_orders }}</h3>
+                <p>Total Orders</p>
+            </div>
+            <div class="bg-primary text-white p-6 rounded-lg text-center">
+                <h3 class="text-2xl font-bold">$0.00</h3>
+                <p>Total Revenue</p>
+            </div>
+        </div>
+        
+        <div class="flex justify-center space-x-4">
+            <a href="{{ url_for('admin_products') }}" class="bg-primary text-white px-6 py-3 rounded-full hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105">Manage Products</a>
+            <a href="{{ url_for('admin_orders') }}" class="bg-primary text-white px-6 py-3 rounded-full hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105">Manage Orders</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
