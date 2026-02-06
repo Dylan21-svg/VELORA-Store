@@ -1,37 +1,136 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="py-16 bg-white">
+<div class="bg-gray-50 p-t-100 p-b-140 min-h-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-4xl font-bold text-center mb-12">Shop</h1>
-        
-        <div class="flex flex-wrap justify-center mb-8">
-            <a href="{{ url_for('shop') }}" class="px-4 py-2 m-2 bg-gray-200 rounded-full hover:bg-primary hover:text-white transition-colors">All</a>
+        <div class="text-center mb-16 animate-fade-in-down">
+            <h1 class="text-5xl font-black text-gray-600 mb-4 uppercase">OUR SHOP</h1>
+            <p class="text-gray-400 font-medium uppercase tracking-[0.2em] text-sm">Discover your next favorite style
+            </p>
+        </div>
+
+        <!-- Filter Categories -->
+        <div
+            class="flex-w flex-l-m filter-tope-group m-b-52 space-x-12 border-b border-gray-100 pb-0 mb-12 flex justify-center sticky top-20 bg-gray-50/80 backdrop-blur-md z-40 py-4 transition-all duration-500">
+            <a href="{{ url_for('shop') }}"
+                class="stext-106 cl6 trans-04 font-black uppercase tracking-widest text-xs pb-4 border-b-2 transition-all {% if not current_category %}text-black border-black{% else %}text-gray-300 border-transparent hover:text-black hover:border-black{% endif %}">
+                All Products
+            </a>
             {% for category in categories %}
-            <a href="{{ url_for('shop', category=category.id) }}" class="px-4 py-2 m-2 bg-gray-200 rounded-full hover:bg-primary hover:text-white transition-colors">{{ category.name }}</a>
+            <a href="{{ url_for('shop', category=category.id) }}"
+                class="stext-106 cl6 trans-04 font-black uppercase tracking-widest text-xs pb-4 border-b-2 transition-all {% if current_category == category.id %}text-black border-black{% else %}text-gray-300 border-transparent hover:text-black hover:border-black{% endif %}">
+                {{ category.name }}
+            </a>
             {% endfor %}
         </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" id="product-grid">
-            {% for product in products %}
-            <div class="product-card bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 relative group">
-                <img src="{{ product.image_url }}" alt="{{ product.name }}" class="w-full h-64 object-cover">
-                <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <a href="{{ url_for('product', id=product.id) }}" class="bg-white text-black px-4 py-2 rounded hover:bg-gray-200 transition-colors mr-2">Quick View</a>
-                    {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('add_to_wishlist', id=product.id) }}" class="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition-colors">
-                            <i class="fas fa-heart"></i>
-                        </a>
-                    {% endif %}
+
+        <div class="flex-w flex-sb-m p-b-52 mb-12 flex justify-end items-center px-4">
+            <div class="flex-w flex-c-m m-tb-10 border-2 border-gray-200 bg-white px-8 py-3 rounded-2xl cursor-pointer hover:border-black hover:bg-black hover:text-white transition-all transform hover:scale-105 shadow-sm group"
+                onclick="toggleFilter()">
+                <div
+                    class="flex-c-m stext-106 cl6 size-104 pointer hov-btn3 trans-04 font-black uppercase tracking-widest text-xs">
+                    <i class="fas fa-filter mr-3 group-hover:rotate-180 transition-transform duration-500"></i>
+                    Refine Results
                 </div>
-                <div class="p-4">
-                    <h3 class="text-lg font-semibold mb-2">{{ product.name }}</h3>
-                    <p class="text-primary font-bold">${{ "%.2f"|format(product.price) }}</p>
-                    <button onclick="addToCart({{ product.id }})" class="mt-4 w-full bg-primary text-white py-2 rounded hover:bg-opacity-80 transition-colors">Add to Cart</button>
+            </div>
+        </div>
+
+        <!-- Filter Panel -->
+        <div id="filter-panel"
+            class="hidden bg-white p-12 rounded-[3rem] mb-16 shadow-2xl shadow-gray-200/50 animate-fade-in-up border border-gray-50">
+            <form action="{{ url_for('shop') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div>
+                    <h4 class="stext-102 cl2 p-b-15 font-black uppercase tracking-widest text-xs mb-6 text-gray-400">
+                        Sort Selection</h4>
+                    <select name="sort"
+                        class="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--dynamic-color)] rounded-2xl px-6 py-4 text-sm font-bold transition-all outline-none">
+                        <option value="">Standard Order</option>
+                        <option value="price_asc" {% if sort_by=='price_asc' %}selected{% endif %}>Price: Low to High
+                        </option>
+                        <option value="price_desc" {% if sort_by=='price_desc' %}selected{% endif %}>Price: High to Low
+                        </option>
+                        <option value="newest" {% if sort_by=='newest' %}selected{% endif %}>Newest Arrival</option>
+                    </select>
+                </div>
+
+                <div>
+                    <h4 class="stext-102 cl2 p-b-15 font-black uppercase tracking-widest text-xs mb-6 text-gray-400">
+                        Price Threshold</h4>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative flex-1">
+                            <span class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
+                            <input type="number" name="min_price" placeholder="Min"
+                                value="{{ min_price if min_price is not none }}"
+                                class="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--dynamic-color)] rounded-2xl pl-10 pr-6 py-4 text-sm font-bold transition-all outline-none">
+                        </div>
+                        <span class="text-gray-300 font-black">/</span>
+                        <div class="relative flex-1">
+                            <span class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
+                            <input type="number" name="max_price" placeholder="Max"
+                                value="{{ max_price if max_price is not none }}"
+                                class="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--dynamic-color)] rounded-2xl pl-10 pr-6 py-4 text-sm font-bold transition-all outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-end">
+                    <button type="submit"
+                        class="w-full bg-black text-white py-5 rounded-2xl font-black tracking-widest hover:bg-[var(--dynamic-color)] transition-all transform hover:scale-105 shadow-xl hover:shadow-[var(--dynamic-color)]/20 uppercase">
+                        Update Gallery
+                    </button>
+                </div>
+
+                {% if current_category %}
+                <input type="hidden" name="category" value="{{ current_category }}">
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+            {% for product in products %}
+            <div class="group h-full flex flex-col animate-fade-in-up"
+                style="animation-delay: {{ loop.index0 * 0.05 }}s;">
+                <div
+                    class="relative overflow-hidden bg-white h-[400px] rounded-3xl group-hover:shadow-2xl transition-all duration-500 border border-transparent group-hover:border-gray-100">
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div
+                        class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/20 backdrop-blur-[2px]">
+                        <a href="{{ url_for('product', id=product.id) }}"
+                            class="flex-c-m stext-103 cl2 size-102 bg-white text-gray-900 px-8 py-3 rounded-full font-black shadow-2xl hover:bg-[var(--dynamic-color)] hover:text-white transition-all transform hover:scale-110">
+                            QUICK VIEW
+                        </a>
+                    </div>
+                </div>
+
+                <div class="p-t-14 mt-6 flex justify-between items-start px-2">
+                    <div>
+                        <a href="{{ url_for('product', id=product.id) }}"
+                            class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6 block text-lg font-bold hover:text-[var(--dynamic-color)] transition-colors">
+                            {{ product.name }}
+                        </a>
+                        <span class="stext-105 cl3 block text-gray-400 font-medium mt-1">
+                            ${{ "%.2f"|format(product.price) }}
+                        </span>
+                    </div>
+                    <div class="block2-txt-child2 flex-r p-t-3">
+                        <a href="{{ url_for('add_to_wishlist', id=product.id) }}"
+                            class="btn-addwish-b2 dis-block pos-relative js-addwish-b2 text-2xl transition-colors {% if product.id in wishlist_items %}text-[var(--dynamic-color)]{% else %}text-gray-200 hover:text-[var(--dynamic-color)]{% endif %}">
+                            <i class="{% if product.id in wishlist_items %}fas{% else %}far{% endif %} fa-heart"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
             {% endfor %}
         </div>
     </div>
-</section>
+</div>
+
+<script>
+    function toggleFilter() {
+        const panel = document.getElementById('filter-panel');
+        panel.classList.toggle('hidden');
+    }
+</script>
 {% endblock %}

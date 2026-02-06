@@ -10,9 +10,20 @@ from werkzeug.utils import secure_filename
 def admin_dashboard():
     if not current_user.is_admin or request.args.get('key') != 'velora2026':
         return redirect(url_for('index'))
+    
     total_products = Product.query.count()
     total_orders = Order.query.count()
-    return render_template('admin/dashboard.html', total_products=total_products, total_orders=total_orders)
+    total_revenue = db.session.query(db.func.sum(Order.total)).filter(Order.status == 'paid').scalar() or 0.0
+    recent_orders = Order.query.order_by(Order.created_at.desc()).limit(5).all()
+    
+    # Calculate some growth/activity mocked for now or use real data
+    # In a real app we'd compare to last month
+    
+    return render_template('admin/dashboard.html', 
+                         total_products=total_products, 
+                         total_orders=total_orders, 
+                         total_revenue=total_revenue,
+                         recent_orders=recent_orders)
 
 @app.route('/admin/products')
 @login_required
@@ -33,6 +44,7 @@ def add_product():
         description = request.form.get('description')
         price = float(request.form.get('price'))
         category_id = int(request.form.get('category'))
+        stock_quantity = int(request.form.get('stock', 0))
         image = request.files.get('image')
         if image:
             filename = secure_filename(image.filename)
@@ -40,11 +52,11 @@ def add_product():
             image_url = f'/static/images/{filename}'
         else:
             image_url = '/static/images/default.jpg'
-        product = Product(name=name, description=description, price=price, image_url=image_url, category_id=category_id)
+        product = Product(name=name, description=description, price=price, image_url=image_url, category_id=category_id, stock_quantity=stock_quantity)
         db.session.add(product)
         db.session.commit()
         flash('Product added successfully')
-        return redirect(url_for('admin_products'))
+        return redirect(url_for('admin_products', key='velora2026'))
     categories = Category.query.all()
     return render_template('admin/add_product.html', categories=categories)
 
@@ -59,6 +71,7 @@ def edit_product(id):
         product.description = request.form.get('description')
         product.price = float(request.form.get('price'))
         product.category_id = int(request.form.get('category'))
+        product.stock_quantity = int(request.form.get('stock', 0))
         image = request.files.get('image')
         if image:
             filename = secure_filename(image.filename)
@@ -66,7 +79,7 @@ def edit_product(id):
             product.image_url = f'/static/images/{filename}'
         db.session.commit()
         flash('Product updated successfully')
-        return redirect(url_for('admin_products'))
+        return redirect(url_for('admin_products', key='velora2026'))
     categories = Category.query.all()
     return render_template('admin/edit_product.html', product=product, categories=categories)
 
@@ -79,7 +92,7 @@ def delete_product(id):
     db.session.delete(product)
     db.session.commit()
     flash('Product deleted successfully')
-    return redirect(url_for('admin_products'))
+    return redirect(url_for('admin_products', key='velora2026'))
 
 @app.route('/admin/categories/add', methods=['POST'])
 @login_required
@@ -90,7 +103,7 @@ def add_category():
     category = Category(name=name)
     db.session.add(category)
     db.session.commit()
-    return redirect(url_for('admin_products'))
+    return redirect(url_for('admin_products', key='velora2026'))
 
 @app.route('/admin/orders')
 @login_required
@@ -109,4 +122,29 @@ def update_order_status(id):
     status = request.form.get('status')
     order.status = status
     db.session.commit()
-    return redirect(url_for('admin_orders'))
+    return redirect(url_for('admin_orders', key='velora2026'))
+
+@app.route('/admin/customers')
+@login_required
+def admin_customers():
+    if not current_user.is_admin or request.args.get('key') != 'velora2026':
+        return redirect(url_for('index'))
+    users = User.query.all()
+    # Simple order count for each user
+    user_data = []
+    for user in users:
+        order_count = Order.query.filter_by(user_id=user.id).count()
+        total_spent = db.session.query(db.func.sum(Order.total)).filter(Order.user_id == user.id, Order.status == 'paid').scalar() or 0.0
+        user_data.append({
+            'user': user,
+            'order_count': order_count,
+            'total_spent': total_spent
+        })
+    return render_template('admin/customers.html', customers=user_data)
+
+@app.route('/admin/settings')
+@login_required
+def admin_settings():
+    if not current_user.is_admin or request.args.get('key') != 'velora2026':
+        return redirect(url_for('index'))
+    return render_template('admin/settings.html')

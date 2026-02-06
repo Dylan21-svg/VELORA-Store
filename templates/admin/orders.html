@@ -1,41 +1,87 @@
-{% extends "base.html" %}
+{% extends "admin/admin_base.html" %}
 
-{% block content %}
-<section class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-4xl font-bold text-center mb-12">Manage Orders</h1>
-        
-        <div class="space-y-4">
-            {% for order in orders %}
-            <div class="bg-gray-50 p-6 rounded-lg">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h3 class="text-lg font-semibold">Order #{{ order.id }}</h3>
-                        <p class="text-gray-600">Date: {{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
-                        <p class="text-gray-600">Total: ${{ "%.2f"|format(order.total) }}</p>
-                        <p class="text-gray-600">Status: {{ order.status }}</p>
-                    </div>
-                    <form action="{{ url_for('update_order_status', id=order.id) }}" method="post" class="flex space-x-2">
-                        <select name="status" class="border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary">
-                            <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
-                            <option value="processing" {% if order.status == 'processing' %}selected{% endif %}>Processing</option>
-                            <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>Shipped</option>
-                            <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Delivered</option>
-                        </select>
-                        <button type="submit" class="bg-primary text-white px-4 py-2 rounded hover:bg-opacity-80">Update</button>
-                    </form>
-                </div>
-                <div class="space-y-2">
-                    {% for item in order.items %}
-                    <div class="flex justify-between">
-                        <span>{{ item.product.name }} x{{ item.quantity }}</span>
-                        <span>${{ "%.2f"|format(item.price * item.quantity) }}</span>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endfor %}
+{% block title %}Manage Orders{% endblock %}
+
+{% block admin_content %}
+<div class="mb-8">
+    <h3 class="text-2xl font-bold text-gray-900">Order Management</h3>
+    <p class="text-sm text-gray-500 font-medium">Track sales, update shipping statuses, and manage customer fulfillment.
+    </p>
+</div>
+
+<div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center space-x-2">
+            <button
+                class="px-4 py-2 bg-secondary text-primary rounded-xl text-sm font-bold shadow-sm shadow-secondary/20">All
+                Orders</button>
+            <button
+                class="px-4 py-2 bg-dashboard text-gray-500 rounded-xl text-sm font-bold hover:bg-gray-200 transition-colors">Pending</button>
+            <button
+                class="px-4 py-2 bg-dashboard text-gray-500 rounded-xl text-sm font-bold hover:bg-gray-200 transition-colors">Paid</button>
+        </div>
+        <div class="relative max-w-xs w-full">
+            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input type="text" placeholder="Find order ID..."
+                class="w-full pl-11 pr-4 py-3 bg-dashboard rounded-xl border-none focus:ring-2 focus:ring-secondary text-sm">
         </div>
     </div>
-</section>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead class="bg-gray-50 text-gray-500 text-[11px] uppercase tracking-wider">
+                <tr>
+                    <th class="px-6 py-4 font-bold">Order ID</th>
+                    <th class="px-6 py-4 font-bold">Date</th>
+                    <th class="px-6 py-4 font-bold">Customer ID</th>
+                    <th class="px-6 py-4 font-bold">Total Amount</th>
+                    <th class="px-6 py-4 font-bold">Status</th>
+                    <th class="px-6 py-4 font-bold text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for order in orders %}
+                <tr class="hover:bg-gray-50/50 transition-colors">
+                    <td class="px-6 py-4 text-sm font-bold text-gray-900">#{{ order.id }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-500">{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center space-x-2">
+                            <div
+                                class="w-8 h-8 rounded-full bg-dashboard flex items-center justify-center text-[10px] font-bold text-gray-500">
+                                {{ order.user_id }}
+                            </div>
+                            <span class="text-xs font-medium text-gray-700">Customer #{{ order.user_id }}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-sm font-extrabold text-gray-900">${{ "%.2f"|format(order.total) }}</td>
+                    <td class="px-6 py-4">
+                        <form action="{{ url_for('update_order_status', id=order.id) }}?key=velora2026" method="POST"
+                            class="inline">
+                            <select name="status" onchange="this.form.submit()" class="text-[10px] font-extrabold uppercase px-3 py-1.5 rounded-full border-none 
+                                {% if order.status == 'paid' %} bg-green-100 text-green-600 
+                                {% elif order.status == 'pending' %} bg-yellow-100 text-yellow-600 
+                                {% else %} bg-gray-100 text-gray-600 {% endif %} 
+                                focus:ring-2 focus:ring-secondary cursor-pointer">
+                                <option value="pending" {% if order.status=='pending' %}selected{% endif %}>Pending
+                                </option>
+                                <option value="paid" {% if order.status=='paid' %}selected{% endif %}>Paid</option>
+                                <option value="shipped" {% if order.status=='shipped' %}selected{% endif %}>Shipped
+                                </option>
+                                <option value="delivered" {% if order.status=='delivered' %}selected{% endif %}>
+                                    Delivered</option>
+                                <option value="cancelled" {% if order.status=='cancelled' %}selected{% endif %}>
+                                    Cancelled</option>
+                            </select>
+                        </form>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <button
+                            class="text-accent hover:text-primary transition-colors text-xs font-bold uppercase tracking-widest bg-accent/5 px-4 py-2 rounded-xl">Details</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

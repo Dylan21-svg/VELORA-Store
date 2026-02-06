@@ -21,8 +21,16 @@
                     We're not just selling products – we're helping you tell your story through style.
                 </p>
             </div>
-            <div>
-                <img src="/static/images/default.jpg" alt="About Velora" class="w-full h-96 object-cover rounded-lg shadow-lg">
+            <div class="about-slider-wrap">
+                <div class="about-slide-item active"
+                     style="background-image: url('{{ url_for('static', filename='images/damson1.jpeg') }}');">
+                </div>
+                <div class="about-slide-item"
+                    style="background-image: url('{{ url_for('static', filename='images/damson2.jpeg') }}');">
+                </div>
+                <div class="about-slide-item"
+                    style="background-image: url('{{ url_for('static', filename='images/damson3.jpeg') }}');">
+                </div>
             </div>
         </div>
         

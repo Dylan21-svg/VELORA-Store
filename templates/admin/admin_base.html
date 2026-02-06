@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Velora Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1a1a1a',
+                        secondary: '#facc15',
+                        accent: '#3b82f6',
+                        dashboard: '#f3f4f6'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .sidebar-item-active {
+            background: #facc15;
+            color: #1a1a1a;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+
+<body class="bg-dashboard">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar"
+            class="fixed inset-y-0 left-0 bg-primary text-white w-64 transform -translate-x-full md:translate-x-0 md:relative transition-transform duration-300 z-50">
+            <div class="p-6">
+                <a href="{{ url_for('index') }}" class="text-2xl font-bold italic tracking-tighter">
+                    <span class="text-white">VELORA</span><span class="text-secondary">_ADMIN</span>
+                </a>
+            </div>
+            <nav class="mt-6 px-4 space-y-2">
+                <a href="{{ url_for('admin_dashboard') }}?key=velora2026"
+                    class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.endpoint == 'admin_dashboard' %}sidebar-item-active{% else %}hover:bg-white/10 text-gray-400 hover:text-white{% endif %}">
+                    <i class="fas fa-chart-line w-6"></i>
+                    <span class="font-medium">Dashboard</span>
+                </a>
+                <a href="{{ url_for('admin_products') }}?key=velora2026"
+                    class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.endpoint == 'admin_products' or request.endpoint == 'add_product' or request.endpoint == 'edit_product' %}sidebar-item-active{% else %}hover:bg-white/10 text-gray-400 hover:text-white{% endif %}">
+                    <i class="fas fa-box w-6"></i>
+                    <span class="font-medium">Products</span>
+                </a>
+                <a href="{{ url_for('admin_orders') }}?key=velora2026"
+                    class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.endpoint == 'admin_orders' %}sidebar-item-active{% else %}hover:bg-white/10 text-gray-400 hover:text-white{% endif %}">
+                    <i class="fas fa-shopping-bag w-6"></i>
+                    <span class="font-medium">Orders</span>
+                </a>
+                <a href="{{ url_for('admin_customers') }}?key=velora2026"
+                    class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.endpoint == 'admin_customers' %}sidebar-item-active{% else %}hover:bg-white/10 text-gray-400 hover:text-white{% endif %}">
+                    <i class="fas fa-users w-6"></i>
+                    <span class="font-medium">Customers</span>
+                </a>
+                <a href="{{ url_for('admin_settings') }}?key=velora2026"
+                    class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.endpoint == 'admin_settings' %}sidebar-item-active{% else %}hover:bg-white/10 text-gray-400 hover:text-white{% endif %}">
+                    <i class="fas fa-cog w-6"></i>
+                    <span class="font-medium">Settings</span>
+                </a>
+            </nav>
+            <div class="absolute bottom-8 left-0 w-full px-6">
+                <a href="{{ url_for('logout') }}"
+                    class="flex items-center space-x-3 p-4 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all duration-300">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="font-bold">Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- Topbar -->
+            <header class="h-20 glass border-b border-gray-200 flex items-center justify-between px-8 z-40">
+                <div class="flex items-center space-x-4">
+                    <button id="sidebarToggle" class="md:hidden text-primary text-xl">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2 class="text-xl font-semibold text-gray-800">{% block title %}Dashboard{% endblock %}</h2>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="relative">
+                        <i class="far fa-bell text-gray-500 text-xl cursor-pointer"></i>
+                        <span
+                            class="absolute -top-1 -right-1 bg-secondary w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-bold">3</span>
+                    </div>
+                    <div class="flex items-center space-x-3 border-l border-gray-200 pl-6">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-sm font-bold text-gray-900">{{ current_user.username }}</p>
+                            <p class="text-[11px] text-gray-500 font-medium">Administrator</p>
+                        </div>
+                        <div
+                            class="w-10 h-10 rounded-xl bg-secondary text-primary flex items-center justify-center font-bold shadow-lg shadow-secondary/20">
+                            {{ current_user.username[0].upper() }}
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto p-8">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                {% for message in messages %}
+                <div
+                    class="mb-6 p-4 bg-white border-l-4 border-secondary rounded-lg shadow-sm flex items-center space-x-3 animate-fade-in-down">
+                    <i class="fas fa-check-circle text-secondary"></i>
+                    <span class="text-sm font-medium">{{ message }}</span>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                {% block admin_content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        });
+    </script>
+</body>
+
+</html>
+

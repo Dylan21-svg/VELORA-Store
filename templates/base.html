@@ -1,66 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Velora Store</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-gray-50 text-gray-900">
-    <nav class="fixed top-0 w-full shadow-lg z-50 transition-colors duration-1000" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="{{ url_for('index') }}" class="text-2xl font-bold" id="logo"><span class="text-white">VELORA</span> <span class="text-yellow-400">Store</span></a>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="{{ url_for('index') }}" class="text-white hover:text-gray-200 transition-colors">Home</a>
-                    <a href="{{ url_for('shop') }}" class="text-white hover:text-gray-200 transition-colors">Shop</a>
-                    <a href="{{ url_for('features') }}" class="text-white hover:text-gray-200 transition-colors">Features</a>
-                    <a href="{{ url_for('about') }}" class="text-white hover:text-gray-200 transition-colors">About</a>
-                    <a href="{{ url_for('contact') }}" class="text-white hover:text-gray-200 transition-colors">Contact</a>
-                    <a href="{{ url_for('help') }}" class="text-white hover:text-gray-200 transition-colors">Help & FAQ</a>
-                    <form action="{{ url_for('search') }}" method="get" class="flex items-center">
-                        <input type="text" name="q" placeholder="Search products..." class="px-3 py-1 text-black rounded-l">
-                        <button type="submit" class="bg-yellow-400 text-black px-3 py-1 rounded-r hover:bg-yellow-500">Search</button>
-                    </form>
-                </div>
-                <div class="flex items-center space-x-4">
-                    {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('cart') }}" class="text-white hover:text-gray-200 transition-colors relative">
-                            <i class="fas fa-shopping-cart text-xl"></i>
-                            <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
-                        </a>
-                        <a href="{{ url_for('wishlist') }}" class="text-white hover:text-gray-200 transition-colors">
-                            <i class="fas fa-heart text-xl"></i>
-                        </a>
+
+<body class="bg-white">
+    <!-- Header -->
+    <header class="header-v1">
+        <div class="container-menu-desktop" id="header-container">
+            <div class="wrap-menu-desktop">
+                <!-- Logo -->
+                <a href="{{ url_for('index') }}" class="logo flex items-center">
+                    <span id="logo-velora"
+                        class="text-3xl font-black tracking-tighter transition-colors duration-500">VELORA</span>
+                    <span id="logo-store"
+                        class="text-3xl font-black tracking-tighter text-white ml-2 transition-colors duration-500">STORE</span>
+                </a>
+
+                <!-- Menu -->
+                <div class="menu-desktop">
+                    <ul class="main-menu">
+                        <li class="{% if request.endpoint == 'index' %}active-menu{% endif %}">
+                            <a href="{{ url_for('index') }}">Home</a>
+                        </li>
+                        <li class="{% if request.endpoint == 'shop' %}active-menu{% endif %}">
+                            <a href="{{ url_for('shop') }}">Shop</a>
+                        </li>
+                        <li class="{% if request.endpoint == 'features' %}active-menu{% endif %}">
+                            <a href="{{ url_for('features') }}">Features</a>
+                        </li>
+                        <li class="{% if request.endpoint == 'about' %}active-menu{% endif %}">
+                            <a href="{{ url_for('about') }}">About</a>
+                        </li>
+                        <li class="{% if request.endpoint == 'contact' %}active-menu{% endif %}">
+                            <a href="{{ url_for('contact') }}">Contact</a>
+                        </li>
                         {% if current_user.is_admin %}
-                            <a href="{{ url_for('admin_dashboard') }}?key=velora2026" class="text-white hover:text-gray-200 transition-colors">Admin</a>
+                        <li>
+                            <a href="{{ url_for('admin_dashboard') }}?key=velora2026">Admin</a>
+                        </li>
                         {% endif %}
-                        <a href="{{ url_for('logout') }}" class="text-white hover:text-gray-200 transition-colors">Logout</a>
+                    </ul>
+                </div>
+
+                <!-- Icon header -->
+                <div class="wrap-icon-header">
+                    <div
+                        class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 js-show-modal-search cursor-pointer">
+                        <i class="fas fa-search"></i>
+                    </div>
+
+                    <a href="{{ url_for('cart') }}"
+                        class="icon-header-item icon-header-noti hov-cl1 trans-04 p-l-22 p-r-11" data-notify="0"
+                        id="cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </a>
+
+                    <a href="{{ url_for('wishlist') }}"
+                        class="icon-header-item icon-header-noti hov-cl1 trans-04 p-l-22 p-r-11" data-notify="0"
+                        id="wishlist-icon">
+                        <i class="fas fa-heart"></i>
+                    </a>
+
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('dashboard') }}" class="icon-header-item hov-cl1 trans-04 p-l-22 p-r-11">
+                        <i class="fas fa-user-circle"></i>
+                    </a>
+                    <a href="{{ url_for('logout') }}"
+                        class="text-xs font-bold uppercase tracking-wider text-white hov-cl1"
+                        style="color: inherit;">Logout</a>
                     {% else %}
-                        <a href="{{ url_for('login') }}" class="text-white hover:text-gray-200 transition-colors">Login</a>
-                        <a href="{{ url_for('register') }}" class="text-white hover:text-gray-200 transition-colors">Register</a>
+                    <a href="{{ url_for('login') }}"
+                        class="text-xs font-bold uppercase tracking-wider text-white hov-cl1"
+                        style="color: inherit;">Login</a>
                     {% endif %}
                 </div>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <main class="pt-16">
+    <!-- Modal Search -->
+    <div id="search-modal"
+        class="fixed inset-0 z-[2000] invisible opacity-0 transition-all duration-300 flex items-center justify-center modal-search-header">
+        <button class="absolute top-8 right-8 text-4xl text-gray-500 hover:text-black transition-colors"
+            onclick="hideSearchModal()">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="w-full max-w-3xl px-6">
+            <form action="{{ url_for('search') }}" method="GET" class="relative group">
+                <input type="text" name="q" placeholder="Search for products..."
+                    class="w-full text-5xl font-bold bg-transparent border-b-4 border-gray-200 focus:border-black outline-none pb-4 transition-colors">
+                <button type="submit"
+                    class="absolute right-0 top-1/2 -translate-y-1/2 text-4xl text-gray-300 group-focus-within:text-black transition-colors">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <main>
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-gray-800 text-white py-8 mt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <p>&copy; 2026 Velora Store. All rights reserved.</p>
+    <!-- Footer -->
+    <footer class="footer-coza">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="footer-title">Categories</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('shop') }}?category=1">Women</a></li>
+                        <li><a href="{{ url_for('shop') }}?category=1">Men</a></li>
+                        <li><a href="{{ url_for('shop') }}?category=2">Shoes</a></li>
+                        <li><a href="{{ url_for('shop') }}?category=3">Watches</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="footer-title">Help</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('dashboard') }}">Track Order</a></li>
+                        <li><a href="{{ url_for('help') }}">Returns</a></li>
+                        <li><a href="{{ url_for('help') }}">Shipping</a></li>
+                        <li><a href="{{ url_for('help') }}">FAQs</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="footer-title">Get in touch</h4>
+                    <p class="leading-relaxed">
+                        Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us
+                        on (+1) 96 716 6879
+                    </p>
+                    <div class="flex space-x-4 mt-6">
+                        <a href="#" class="text-xl hover:text-white transition-colors"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-xl hover:text-white transition-colors"><i
+                                class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-xl hover:text-white transition-colors"><i
+                                class="fab fa-pinterest-p"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="footer-title">Newsletter</h4>
+                    <form action="#" class="newsletter-form">
+                        <input type="email" name="email" placeholder="email@example.com" class="newsletter-input">
+                        <div class="newsletter-focus"></div>
+                    </form>
+                    <button class="btn-newsletter trans-04">Subscribe</button>
+                </div>
+            </div>
+
+            <div class="mt-16 pt-8 border-t border-gray-700 text-center">
+                <p>Copyright &copy; 2026 All rights reserved | This Website is made with <i
+                        class="fa fa-heart text-accent-color"></i> by Dylan Sparks</p>
+            </div>
         </div>
     </footer>
 
+    <!-- Theme JS -->
+    <script>
+        window.addEventListener('scroll', function () {
+            const header = document.getElementById('header-container');
+            const logoStore = document.getElementById('logo-store');
+
+            if (window.scrollY > 50) {
+                header.classList.add('fixed-header');
+            } else {
+                header.classList.remove('fixed-header');
+            }
+            // Ensure logo store is visible on white background
+            logoStore.style.color = '#333';
+        });
+        // Initial set
+        document.getElementById('logo-store').style.color = '#333';
+    </script>
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/slider.js') }}"></script>
+    {% block extra_js %}{% endblock %}
 </body>
+
 </html>

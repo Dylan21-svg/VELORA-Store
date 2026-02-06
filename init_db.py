@@ -1,5 +1,5 @@
 from app import app, db
-from models import User, Category, Product
+from models import User, Category, Product, Review, Wishlist, Transaction
 from werkzeug.security import generate_password_hash
 
 def init_db():
@@ -27,14 +27,14 @@ def init_db():
             db.session.commit()
             
             products = [
-                Product(name='Elegant Dress', description='A beautiful evening dress', price=89.99, image_url='/static/images/default.jpg', category_id=1),
-                Product(name='Casual T-Shirt', description='Comfortable cotton t-shirt', price=29.99, image_url='/static/images/default.jpg', category_id=1),
-                Product(name='Running Shoes', description='High-performance running shoes', price=129.99, image_url='/static/images/default.jpg', category_id=2),
-                Product(name='Leather Boots', description='Classic leather boots', price=199.99, image_url='/static/images/default.jpg', category_id=2),
-                Product(name='Gold Necklace', description='Elegant gold necklace', price=149.99, image_url='/static/images/default.jpg', category_id=3),
-                Product(name='Designer Sunglasses', description='Stylish sunglasses', price=79.99, image_url='/static/images/default.jpg', category_id=3),
-                Product(name='Leather Handbag', description='Premium leather handbag', price=249.99, image_url='/static/images/default.jpg', category_id=4),
-                Product(name='Backpack', description='Durable canvas backpack', price=59.99, image_url='/static/images/default.jpg', category_id=4)
+                Product(name='Elegant Dress', description='A beautiful evening dress', price=89.99, image_url='/static/images/product-01.jpg', category_id=1, stock_quantity=10),
+                Product(name='Casual T-Shirt', description='Comfortable cotton t-shirt', price=29.99, image_url='/static/images/product-02.jpg', category_id=1, stock_quantity=50),
+                Product(name='Running Shoes', description='High-performance running shoes', price=129.99, image_url='/static/images/product-03.jpg', category_id=2, stock_quantity=15),
+                Product(name='Leather Boots', description='Classic leather boots', price=199.99, image_url='/static/images/product-04.jpg', category_id=2, stock_quantity=8),
+                Product(name='Gold Necklace', description='Elegant gold necklace', price=149.99, image_url='/static/images/product-05.jpg', category_id=3, stock_quantity=5),
+                Product(name='Designer Sunglasses', description='Stylish sunglasses', price=79.99, image_url='/static/images/product-06.jpg', category_id=3, stock_quantity=20),
+                Product(name='Leather Handbag', description='Premium leather handbag', price=249.99, image_url='/static/images/product-07.jpg', category_id=4, stock_quantity=3),
+                Product(name='Backpack', description='Durable canvas backpack', price=59.99, image_url='/static/images/product-08.jpg', category_id=4, stock_quantity=25)
             ]
             db.session.add_all(products)
             db.session.commit()

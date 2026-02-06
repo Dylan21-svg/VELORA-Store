@@ -1,37 +1,118 @@
-{% extends "base.html" %}
+{% extends "admin/admin_base.html" %}
 
-{% block content %}
-<section class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-4xl font-bold text-center mb-12">Manage Products</h1>
-        
-        <div class="mb-8">
-            <a href="{{ url_for('add_product') }}" class="bg-primary text-white px-6 py-3 rounded-full hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105">Add New Product</a>
+{% block title %}Manage Products{% endblock %}
+
+{% block admin_content %}
+<div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+        <h3 class="text-2xl font-bold text-gray-900">Products Catalog</h3>
+        <p class="text-sm text-gray-500 font-medium">Manage your inventory, prices, and product details.</p>
+    </div>
+    <a href="{{ url_for('add_product') }}?key=velora2026"
+        class="inline-flex items-center space-x-2 bg-secondary text-primary px-6 py-3 rounded-2xl font-bold hover:bg-opacity-90 transition-all shadow-lg shadow-secondary/20">
+        <i class="fas fa-plus"></i>
+        <span>Add New Product</span>
+    </a>
+</div>
+
+<div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="relative flex-1 max-w-md">
+            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input type="text" placeholder="Search products..."
+                class="w-full pl-11 pr-4 py-3 bg-dashboard rounded-xl border-none focus:ring-2 focus:ring-secondary text-sm">
         </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {% for product in products %}
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <img src="{{ product.image_url }}" alt="{{ product.name }}" class="w-full h-32 object-cover rounded mb-4">
-                <h3 class="font-semibold">{{ product.name }}</h3>
-                <p class="text-primary">${{ "%.2f"|format(product.price) }}</p>
-                <div class="mt-4 space-x-2">
-                    <a href="{{ url_for('edit_product', id=product.id) }}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Edit</a>
-                    <form action="{{ url_for('delete_product', id=product.id) }}" method="post" class="inline">
-                        <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600" onclick="return confirm('Are you sure?')">Delete</button>
-                    </form>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        
-        <div class="mt-12">
-            <h2 class="text-2xl font-bold mb-4">Add Category</h2>
-            <form action="{{ url_for('add_category') }}" method="post" class="flex space-x-4">
-                <input type="text" name="name" placeholder="Category Name" required class="flex-1 border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary">
-                <button type="submit" class="bg-primary text-white px-6 py-2 rounded hover:bg-opacity-80">Add Category</button>
-            </form>
+        <div class="flex items-center space-x-3">
+            <select
+                class="bg-dashboard border-none rounded-xl px-4 py-3 text-sm font-medium text-gray-600 focus:ring-2 focus:ring-secondary">
+                <option>All Categories</option>
+                {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+            <button
+                class="w-12 h-12 bg-dashboard rounded-xl flex items-center justify-center text-gray-600 hover:bg-secondary/10 hover:text-secondary transition-colors">
+                <i class="fas fa-filter"></i>
+            </button>
         </div>
     </div>
-</section>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead class="bg-gray-50 text-gray-500 text-[11px] uppercase tracking-wider">
+                <tr>
+                    <th class="px-6 py-4 font-bold">Product</th>
+                    <th class="px-6 py-4 font-bold">Category</th>
+                    <th class="px-6 py-4 font-bold">Price</th>
+                    <th class="px-6 py-4 font-bold">Stock</th>
+                    <th class="px-6 py-4 font-bold">Status</th>
+                    <th class="px-6 py-4 font-bold text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for product in products %}
+                <tr class="hover:bg-gray-50/50 transition-colors group">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center space-x-4">
+                            <div
+                                class="w-12 h-12 rounded-xl border border-gray-100 overflow-hidden bg-dashboard flex-shrink-0">
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}"
+                                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-gray-900">{{ product.name }}</p>
+                                <p class="text-[11px] text-gray-400 truncate max-w-[150px]">{{ product.description }}
+                                </p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-lg">{{
+                            product.category.name }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-sm font-bold text-gray-900">${{ "%.2f"|format(product.price) }}</td>
+                    <td class="px-6 py-4">
+                        <p class="text-sm font-bold text-gray-700">{{ product.stock_quantity }}</p>
+                        <p class="text-[10px] text-gray-400">units available</p>
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if product.stock_quantity > 10 %}
+                        <span class="flex items-center space-x-1.5 text-green-600 text-[10px] font-bold uppercase">
+                            <span class="w-1.5 h-1.5 bg-green-600 rounded-full animate-pulse"></span>
+                            <span>In Stock</span>
+                        </span>
+                        {% elif product.stock_quantity > 0 %}
+                        <span class="flex items-center space-x-1.5 text-yellow-600 text-[10px] font-bold uppercase">
+                            <span class="w-1.5 h-1.5 bg-yellow-600 rounded-full animate-pulse"></span>
+                            <span>Low Stock</span>
+                        </span>
+                        {% else %}
+                        <span class="flex items-center space-x-1.5 text-red-600 text-[10px] font-bold uppercase">
+                            <span class="w-1.5 h-1.5 bg-red-600 rounded-full"></span>
+                            <span>Out of Stock</span>
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <div class="flex items-center justify-end space-x-2">
+                            <a href="{{ url_for('edit_product', id=product.id) }}?key=velora2026"
+                                class="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all">
+                                <i class="fas fa-edit text-xs"></i>
+                            </a>
+                            <form action="{{ url_for('delete_product', id=product.id) }}?key=velora2026" method="POST"
+                                onsubmit="return confirm('Are you sure you want to delete this product?')"
+                                class="inline">
+                                <button type="submit"
+                                    class="w-8 h-8 bg-red-50 text-red-600 rounded-lg flex items-center justify-center hover:bg-red-600 hover:text-white transition-all">
+                                    <i class="fas fa-trash-alt text-xs"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

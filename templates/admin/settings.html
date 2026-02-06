@@ -1,0 +1,100 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block admin_content %}
+<div class="mb-8">
+    <h3 class="text-2xl font-bold text-gray-900">Store Settings</h3>
+    <p class="text-sm text-gray-500 font-medium">Configure your store's global parameters and administrative
+        preferences.</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-2 space-y-6">
+        <!-- General Configuration -->
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+            <h4 class="font-bold text-gray-900 mb-6 flex items-center space-x-2">
+                <i class="fas fa-globe text-secondary"></i>
+                <span>General Configuration</span>
+            </h4>
+            <div class="space-y-6">
+                <div class="flex items-center justify-between p-4 bg-dashboard rounded-2xl">
+                    <div>
+                        <p class="text-sm font-bold text-gray-700">Store Status</p>
+                        <p class="text-[11px] text-gray-400">Enable or disable the storefront for maintenance.</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" checked class="sr-only peer">
+                        <div
+                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary">
+                        </div>
+                    </label>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider pl-1">Store Name</label>
+                    <input type="text" value="Velora Store"
+                        class="w-full px-5 py-3.5 bg-dashboard rounded-2xl border-none focus:ring-2 focus:ring-secondary text-sm font-medium">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider pl-1">Contact Email</label>
+                    <input type="email" value="support@velora.com"
+                        class="w-full px-5 py-3.5 bg-dashboard rounded-2xl border-none focus:ring-2 focus:ring-secondary text-sm font-medium">
+                </div>
+            </div>
+        </div>
+
+        <!-- Security -->
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+            <h4 class="font-bold text-gray-900 mb-6 flex items-center space-x-2">
+                <i class="fas fa-shield-alt text-secondary"></i>
+                <span>Security & API</span>
+            </h4>
+            <div class="space-y-4">
+                <div class="p-4 border border-gray-100 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase">Admin Security Key</p>
+                        <p class="text-sm font-mono text-gray-900 mt-1">velora2026</p>
+                    </div>
+                    <button class="text-accent text-xs font-bold hover:underline">Regenerate</button>
+                </div>
+                <div class="p-4 border border-gray-100 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase">Maintenance Mode</p>
+                        <p class="text-[11px] text-gray-400 mt-1">Off</p>
+                    </div>
+                    <button class="text-primary text-xs font-bold hover:underline">Enable</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Sidebar Info -->
+    <div class="space-y-6">
+        <div class="bg-primary text-white p-8 rounded-3xl shadow-lg relative overflow-hidden">
+            <i class="fas fa-crown absolute -right-4 -bottom-4 text-7xl text-white/5 transform -rotate-12"></i>
+            <h4 class="text-lg font-bold mb-2">Pro Plan</h4>
+            <p class="text-sm text-gray-400 leading-relaxed mb-6">Your professional subscription is active until Dec
+                2026.</p>
+            <button
+                class="w-full py-3 bg-secondary text-primary font-bold rounded-xl hover:bg-opacity-90 transition-all">Manage
+                Billing</button>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 text-center">
+            <p class="text-xs font-bold text-gray-400 uppercase mb-4">Need Help?</p>
+            <p class="text-sm text-gray-600 mb-6 font-medium">Check our documentation or contact the developer.</p>
+            <a href="#"
+                class="inline-block text-accent font-bold text-sm border-b-2 border-accent/20 hover:border-accent transition-all">Visit
+                Support Center</a>
+        </div>
+    </div>
+</div>
+
+<div class="flex items-center justify-end mt-8">
+    <button
+        class="px-10 py-4 bg-primary text-white rounded-2xl font-bold hover:bg-opacity-90 transition-all shadow-xl shadow-primary/20">Save
+        All Changes</button>
+</div>
+{% endblock %}

@@ -1,65 +1,95 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="py-16 bg-white">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-4xl font-bold text-center mb-12">Contact Us</h1>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div>
-                <h2 class="text-2xl font-semibold mb-6">Get in Touch</h2>
-                <div class="space-y-4">
-                    <div class="flex items-center">
-                        <i class="fas fa-map-marker-alt text-primary text-xl mr-4"></i>
+<section class="bg-gray-50 p-t-100 p-b-140">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 animate-fade-in-down">
+            <h1 class="text-5xl font-black tracking-tight text-gray-600 mb-4">CONTACT US</h1>
+            <p class="text-gray-400 font-medium uppercase tracking-[0.2em] text-sm">We'd love to hear from you</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            <!-- Contact Info -->
+            <div class="bg-white p-12 rounded-[3rem] shadow-2xl shadow-gray-200/50 animate-fade-in-up">
+                <h2 class="text-3xl font-black mb-10 text-gray-600 tracking-tight">GET IN TOUCH</h2>
+                <div class="space-y-12">
+                    <div class="flex items-start">
+                        <div
+                            class="w-16 h-16 bg-[var(--dynamic-color)]/10 text-[var(--dynamic-color)] rounded-2xl flex items-center justify-center text-2xl mr-6 transition-colors duration-300">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
                         <div>
-                            <h3 class="font-semibold">Address</h3>
-                            <p class="text-gray-600">123 Fashion Street, Style City, SC 12345</p>
+                            <h3 class="text-sm font-black text-gray-400 mb-1 uppercase tracking-widest">Address</h3>
+                            <p class="text-gray-900 font-bold text-lg">123 Fashion Street, Style City, SC 12345</p>
                         </div>
                     </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-phone text-primary text-xl mr-4"></i>
+                    <div class="flex items-start">
+                        <div
+                            class="w-16 h-16 bg-[var(--dynamic-color)]/10 text-[var(--dynamic-color)] rounded-2xl flex items-center justify-center text-2xl mr-6 transition-colors duration-500">
+                            <i class="fas fa-phone"></i>
+                        </div>
                         <div>
-                            <h3 class="font-semibold">Phone</h3>
-                            <p class="text-gray-600">(555) 123-4567</p>
+                            <h3 class="text-sm font-black text-gray-400 mb-1 uppercase tracking-widest">Phone</h3>
+                            <p class="text-gray-900 font-bold text-lg">(555) 123-4567</p>
                         </div>
                     </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-envelope text-primary text-xl mr-4"></i>
-                        <div>
-                            <h3 class="font-semibold">Email</h3>
-                            <p class="text-gray-600">info@velorastore.com</p>
+                    <div class="flex items-start">
+                        <div
+                            class="w-16 h-16 bg-[var(--dynamic-color)]/10 text-[var(--dynamic-color)] rounded-2xl flex items-center justify-center text-2xl mr-6 transition-colors duration-500">
+                            <i class="fas fa-envelope"></i>
                         </div>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-clock text-primary text-xl mr-4"></i>
                         <div>
-                            <h3 class="font-semibold">Business Hours</h3>
-                            <p class="text-gray-600">Mon-Fri: 9AM-6PM<br>Sat-Sun: 10AM-4PM</p>
+                            <h3 class="text-sm font-black text-gray-400 mb-1 uppercase tracking-widest">Email</h3>
+                            <p class="text-gray-900 font-bold text-lg">info@velorastore.com</p>
                         </div>
                     </div>
                 </div>
+
+                <div class="mt-16 pt-16 border-t border-gray-100">
+                    <h4 class="text-sm font-black text-gray-400 mb-6 uppercase tracking-widest">Follow Us</h4>
+                    <div class="flex space-x-6">
+                        <a href="#"
+                            class="w-12 h-12 bg-gray-50 text-gray-400 rounded-xl flex items-center justify-center hover:bg-black hover:text-white transition-all"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="#"
+                            class="w-12 h-12 bg-gray-50 text-gray-400 rounded-xl flex items-center justify-center hover:bg-black hover:text-white transition-all"><i
+                                class="fab fa-instagram"></i></a>
+                        <a href="#"
+                            class="w-12 h-12 bg-gray-50 text-gray-400 rounded-xl flex items-center justify-center hover:bg-black hover:text-white transition-all"><i
+                                class="fab fa-pinterest-p"></i></a>
+                    </div>
+                </div>
             </div>
-            
-            <div>
-                <h2 class="text-2xl font-semibold mb-6">Send us a Message</h2>
-                <form class="space-y-4">
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-                        <input type="text" id="name" name="name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary">
+
+            <!-- Contact Form -->
+            <div class="bg-white p-12 rounded-[3rem] shadow-2xl shadow-gray-200/50 animate-fade-in-up"
+                style="animation-delay: 0.2s;">
+                <h2 class="text-3xl font-black mb-10 text-gray-900 tracking-tight">SEND MESSAGE</h2>
+                <form class="space-y-8">
+                    <div class="relative">
+                        <label for="name"
+                            class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-4 mb-2 block">Your
+                            Name</label>
+                        <input type="text" id="name" name="name" required
+                            class="w-full px-6 py-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-[var(--dynamic-color)] focus:bg-white transition-all outline-none font-bold">
                     </div>
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" id="email" name="email" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary">
+                    <div class="relative">
+                        <label for="email"
+                            class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-4 mb-2 block">Email
+                            Address</label>
+                        <input type="email" id="email" name="email" required
+                            class="w-full px-6 py-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-[var(--dynamic-color)] focus:bg-white transition-all outline-none font-bold">
                     </div>
-                    <div>
-                        <label for="subject" class="block text-sm font-medium text-gray-700">Subject</label>
-                        <input type="text" id="subject" name="subject" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary">
+                    <div class="relative">
+                        <label for="message"
+                            class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-4 mb-2 block">Message</label>
+                        <textarea id="message" name="message" rows="5" required
+                            class="w-full px-6 py-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-[var(--dynamic-color)] focus:bg-white transition-all outline-none font-bold resize-none"></textarea>
                     </div>
-                    <div>
-                        <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
-                        <textarea id="message" name="message" rows="4" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"></textarea>
-                    </div>
-                    <button type="submit" class="w-full bg-primary text-white py-3 rounded-full hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105">Send Message</button>
+                    <button type="submit"
+                        class="w-full py-5 bg-black text-white rounded-2xl font-black tracking-widest hover:bg-[var(--dynamic-color)] transition-all transform hover:scale-105 shadow-xl hover:shadow-[var(--dynamic-color)]/20 uppercase">
+                        Send Message
+                    </button>
                 </form>
             </div>
         </div>

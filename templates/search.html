@@ -1,47 +1,66 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="py-16 bg-white">
+<section class="bg-gray-50 p-t-100 p-b-140 min-h-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-4xl font-bold text-center mb-12">Search Results</h1>
-        
-        {% if query %}
-            <p class="text-center text-gray-600 mb-8">Showing results for "{{ query }}"</p>
-        {% endif %}
-        
+        <div class="text-center mb-16 animate-fade-in-down">
+            <h1 class="text-6xl font-black tracking-tighter text-gray-900 mb-4">SEARCH RESULTS</h1>
+            {% if query %}
+            <p class="text-gray-400 font-medium uppercase tracking-[0.2em] text-sm">Showing results for "{{ query }}"
+            </p>
+            {% endif %}
+        </div>
+
         {% if products %}
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {% for product in products %}
-                <div class="product-card bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-                    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="w-full h-64 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-lg font-semibold mb-2">{{ product.name }}</h3>
-                        <p class="text-primary font-bold">${{ "%.2f"|format(product.price) }}</p>
-                        <div class="flex space-x-2 mt-4">
-                            <button onclick="addToCart({{ product.id }})" class="flex-1 bg-primary text-white py-2 rounded hover:bg-opacity-80 transition-colors">Add to Cart</button>
-                            <a href="{{ url_for('add_to_wishlist', id=product.id) }}" class="bg-gray-200 text-gray-700 px-3 py-2 rounded hover:bg-gray-300 transition-colors">
-                                <i class="fas fa-heart"></i>
-                            </a>
-                        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+            {% for product in products %}
+            <div class="group h-full flex flex-col animate-fade-in-up"
+                style="animation-delay: {{ loop.index0 * 0.1 }}s;">
+                <div
+                    class="relative overflow-hidden bg-white h-[400px] rounded-3xl group-hover:shadow-2xl transition-all duration-500 border border-transparent group-hover:border-gray-100">
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div
+                        class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/20 backdrop-blur-[2px]">
+                        <a href="{{ url_for('product', id=product.id) }}"
+                            class="flex-c-m stext-103 cl2 size-102 bg-white text-gray-900 px-8 py-3 rounded-full font-black shadow-2xl hover:bg-[var(--dynamic-color)] hover:text-white transition-all transform hover:scale-110">
+                            QUICK VIEW
+                        </a>
                     </div>
                 </div>
-                {% endfor %}
+
+                <div class="p-t-14 mt-6 flex justify-between items-start px-2">
+                    <div>
+                        <a href="{{ url_for('product', id=product.id) }}"
+                            class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6 block text-lg font-bold hover:text-[var(--dynamic-color)] transition-colors">
+                            {{ product.name }}
+                        </a>
+                        <span class="stext-105 cl3 block text-gray-400 font-medium mt-1">
+                            ${{ "%.2f"|format(product.price) }}
+                        </span>
+                    </div>
+                    <div class="block2-txt-child2 flex-r p-t-3">
+                        <a href="{{ url_for('add_to_wishlist', id=product.id) }}"
+                            class="btn-addwish-b2 dis-block pos-relative js-addwish-b2 text-2xl transition-colors {% if product.id in wishlist_items %}text-[var(--dynamic-color)]{% else %}text-gray-200 hover:text-[var(--dynamic-color)]{% endif %}">
+                            <i class="{% if product.id in wishlist_items %}fas{% else %}far{% endif %} fa-heart"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
+            {% endfor %}
+        </div>
         {% else %}
-            {% if query %}
-                <div class="text-center">
-                    <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
-                    <h2 class="text-2xl font-semibold text-gray-600 mb-2">No products found</h2>
-                    <p class="text-gray-500">Try searching with different keywords or browse our shop.</p>
-                    <a href="{{ url_for('shop') }}" class="mt-4 inline-block bg-primary text-white px-6 py-3 rounded-full hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105">Browse Shop</a>
-                </div>
-            {% else %}
-                <div class="text-center">
-                    <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
-                    <h2 class="text-2xl font-semibold text-gray-600 mb-2">Search for Products</h2>
-                    <p class="text-gray-500">Use the search bar above to find products by name or description.</p>
-                </div>
-            {% endif %}
+        <div class="text-center py-20 bg-white rounded-[3rem] shadow-xl shadow-gray-200/50 animate-fade-in-up">
+            <div class="w-32 h-32 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-8">
+                <i class="fas fa-search text-5xl text-gray-200"></i>
+            </div>
+            <h2 class="text-3xl font-black text-gray-900 mb-4 tracking-tight">NO PRODUCTS FOUND</h2>
+            <p class="text-gray-400 font-medium mb-12">Try searching with different keywords or explore our catalog.</p>
+            <a href="{{ url_for('shop') }}"
+                class="inline-block px-12 py-4 bg-black text-white rounded-full font-black tracking-widest hover:bg-[var(--dynamic-color)] transition-all transform hover:scale-105 shadow-xl hover:shadow-[var(--dynamic-color)]/20 uppercase">
+                Browse All Shop
+            </a>
+        </div>
         {% endif %}
     </div>
 </section>

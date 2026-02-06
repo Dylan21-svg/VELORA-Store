@@ -1,19 +1,233 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="py-16 bg-white">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-                <img src="{{ product.image_url }}" alt="{{ product.name }}" class="w-full h-96 object-cover rounded-lg shadow-lg">
+<!-- breadcrumb -->
+<div class="container p-t-100">
+    <div class="flex-w flex-l-m p-l-24 p-r-15 p-t-10 p-lr-0-lg max-w-7xl mx-auto">
+        <a href="{{ url_for('index') }}"
+            class="stext-109 cl8 hov-cl1 trans-04 text-gray-400 text-xs font-bold uppercase tracking-widest hover:text-[var(--dynamic-color)] transition-all">
+            Home
+            <i class="fa fa-angle-right m-l-9 m-r-10 mx-3" aria-hidden="true"></i>
+        </a>
+        <a href="{{ url_for('shop') }}?category={{ product.category_id }}"
+            class="stext-109 cl8 hov-cl1 trans-04 text-gray-400 text-xs font-bold uppercase tracking-widest hover:text-[var(--dynamic-color)] transition-all">
+            {{ product.category.name }}
+            <i class="fa fa-angle-right m-l-9 m-r-10 mx-3" aria-hidden="true"></i>
+        </a>
+        <span class="stext-109 cl4 text-gray-900 text-xs font-black uppercase tracking-widest">
+            {{ product.name }}
+        </span>
+    </div>
+</div>
+
+<!-- Product Detail -->
+<section class="sec-product-detail bg-white p-t-65 p-b-60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-20">
+            <div class="animate-fade-in-up">
+                <div
+                    class="wrap-pic-w wrap-pic-h border border-gray-50 overflow-hidden rounded-[3rem] shadow-2xl shadow-gray-200/50">
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}"
+                        class="w-full h-auto object-cover hover:scale-110 transition-transform duration-1000">
+                </div>
             </div>
-            <div>
-                <h1 class="text-4xl font-bold mb-4">{{ product.name }}</h1>
-                <p class="text-2xl text-primary font-bold mb-4">${{ "%.2f"|format(product.price) }}</p>
-                <p class="text-gray-600 mb-8">{{ product.description }}</p>
-                <button onclick="addToCart({{ product.id }})" class="bg-primary text-white px-8 py-3 rounded-full hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105">Add to Cart</button>
+
+            <div class="p-t-5 animate-fade-in-up" style="animation-delay: 0.2s;">
+                <h4
+                    class="mtext-105 cl2 js-name-detail p-b-14 text-5xl font-black mb-6 text-gray-900 tracking-tighter uppercase leading-tight">
+                    {{ product.name }}
+                </h4>
+
+                <span
+                    class="mtext-106 cl2 text-3xl font-black text-[var(--dynamic-color)] block mb-8 transition-colors duration-500">
+                    ${{ "%.2f"|format(product.price) }}
+                </span>
+
+                <div class="p-b-10 mb-10">
+                    <h5 class="text-[10px] font-black text-gray-300 uppercase tracking-[0.3em] mb-4">Description</h5>
+                    <p class="stext-102 cl3 text-gray-600 leading-relaxed text-lg font-medium">
+                        {{ product.description }}
+                    </p>
+                </div>
+
+                <!-- Stock Status -->
+                <div class="p-b-10 mb-12">
+                    {% if product.stock_quantity > 0 %}
+                    <div class="inline-flex items-center px-6 py-2 bg-gray-50 rounded-full space-x-3">
+                        <span
+                            class="w-2 h-2 rounded-full {% if product.stock_quantity < 5 %}bg-red-600 animate-pulse{% else %}bg-green-500{% endif %}"></span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-gray-500">
+                            {% if product.stock_quantity < 5 %} Only {{ product.stock_quantity }} Remaining {% else %}
+                                In Stock and Ready {% endif %} </span>
+                    </div>
+                    {% else %}
+                    <div class="inline-flex items-center px-6 py-2 bg-gray-50 rounded-full space-x-3">
+                        <span class="w-2 h-2 rounded-full bg-gray-300"></span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">Sold Out</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!--  -->
+                <div class="p-t-33">
+                    <div class="flex-w flex-r-m p-b-10 items-center space-x-8">
+                        {% if product.stock_quantity > 0 %}
+                        <div
+                            class="wrap-num-product flex w-40 h-16 bg-gray-50 rounded-2xl overflow-hidden border-2 border-transparent focus-within:border-[var(--dynamic-color)] transition-all">
+                            <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex justify-center items-center cursor-pointer w-12 hover:bg-gray-100 transition-colors"
+                                onclick="updateQty(-1)">
+                                <i class="fas fa-minus text-xs text-gray-400"></i>
+                            </div>
+                            <input
+                                class="mtext-104 cl3 txt-center num-product flex-1 text-center text-lg font-black border-none bg-transparent outline-none"
+                                type="number" name="num-product" value="1" id="product-qty">
+                            <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex justify-center items-center cursor-pointer w-12 hover:bg-gray-100 transition-colors"
+                                onclick="updateQty(1)">
+                                <i class="fas fa-plus text-xs text-gray-400"></i>
+                            </div>
+                        </div>
+
+                        <button onclick="addToCartDetailed({{ product.id }})"
+                            class="flex-1 py-5 bg-black text-white rounded-2xl font-black tracking-widest hover:bg-[var(--dynamic-color)] transition-all transform hover:scale-105 shadow-xl hover:shadow-[var(--dynamic-color)]/20 uppercase">
+                            Add to bag
+                        </button>
+                        {% else %}
+                        <button disabled
+                            class="flex-1 py-5 bg-gray-100 text-gray-400 rounded-2xl font-black tracking-widest cursor-not-allowed uppercase">
+                            Out of stock
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!--  -->
+                <div
+                    class="flex-w flex-m p-t-40 respon7 mt-16 pt-10 border-t border-gray-100 flex items-center justify-between">
+                    <div class="flex items-center space-x-6">
+                        <a href="{{ url_for('add_to_wishlist', id=product.id) }}"
+                            class="group flex items-center space-x-2 text-gray-300 hover:text-[var(--dynamic-color)] transition-all">
+                            <i
+                                class="{% if product.id in wishlist_items %}fas{% else %}far{% endif %} fa-heart text-2xl"></i>
+                            <span class="text-[10px] font-black uppercase tracking-widest">{% if product.id in
+                                wishlist_items %}In Wishlist{% else %}Add to Wishlist{% endif %}</span>
+                        </a>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest mr-2">Share</span>
+                        <a href="#"
+                            class="w-10 h-10 bg-gray-50 text-gray-400 rounded-xl flex items-center justify-center hover:bg-black hover:text-white transition-all"><i
+                                class="fab fa-facebook-f text-sm"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 bg-gray-50 text-gray-400 rounded-xl flex items-center justify-center hover:bg-black hover:text-white transition-all"><i
+                                class="fab fa-twitter text-sm"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Section -->
+        <div class="m-t-80 mt-32 bg-gray-50 rounded-[4rem] p-16">
+            <div class="flex items-center justify-between mb-16 px-4">
+                <h3
+                    class="text-4xl font-black tracking-tighter text-gray-900 border-b-4 border-[var(--dynamic-color)] pb-2 transition-colors duration-500 uppercase">
+                    REVIEWS</h3>
+                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">{{ product.reviews|length
+                    }} Feedbacks</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-16">
+                <div class="lg:col-span-2 space-y-8">
+                    {% if product.reviews %}
+                    {% for review in product.reviews %}
+                    <div class="bg-white p-10 rounded-[2.5rem] shadow-sm flex space-x-8 animate-fade-in-up">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-[var(--dynamic-color)] font-black text-2xl flex-shrink-0 transition-colors duration-500">
+                            {{ review.user.username[0].upper() }}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-4">
+                                <h5 class="text-lg font-black text-gray-900">{{ review.user.username }}</h5>
+                                <div class="flex space-x-1 text-yellow-400">
+                                    {% for i in range(review.rating) %}
+                                    <i class="fas fa-star text-[10px]"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <p class="text-gray-500 font-medium leading-relaxed italic">"{{ review.comment }}"</p>
+                            <p class="text-[9px] font-black text-gray-300 uppercase tracking-widest mt-6">{{
+                                review.created_at.strftime('%d %B %Y') }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="py-20 text-center bg-white/50 rounded-[3rem] border-2 border-dashed border-gray-200">
+                        <p class="text-gray-400 font-bold uppercase tracking-widest text-xs">No reviews for this product
+                            yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Review Form -->
+                <div>
+                    {% if current_user.is_authenticated %}
+                    <div class="bg-black p-10 rounded-[3rem] shadow-2xl text-white sticky top-32">
+                        <h4 class="text-2xl font-black mb-8 tracking-tight">ADD REVIEW</h4>
+                        <form action="{{ url_for('add_review', id=product.id) }}" method="POST" class="space-y-8">
+                            <div>
+                                <label
+                                    class="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-4 block">Select
+                                    Rating</label>
+                                <div class="flex space-x-2">
+                                    {% for i in range(1, 6) %}
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="rating" value="{{ i }}" class="hidden peer" required>
+                                        <i
+                                            class="fas fa-star text-2xl text-gray-700 hover:text-yellow-400 peer-checked:text-yellow-400 transition-colors"></i>
+                                    </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div>
+                                <textarea name="comment" required placeholder="Describe your experience..."
+                                    class="w-full bg-gray-900 border-2 border-transparent focus:border-[var(--dynamic-color)] rounded-2xl p-6 text-sm font-bold min-h-[150px] outline-none transition-all placeholder:text-gray-700"></textarea>
+                            </div>
+                            <button type="submit"
+                                class="w-full py-4 bg-[var(--dynamic-color)] text-white rounded-xl font-black tracking-widest hover:brightness-110 transition-all uppercase text-sm">
+                                Post Feedback
+                            </button>
+                        </form>
+                    </div>
+                    {% else %}
+                    <div class="bg-white p-10 rounded-[3rem] border border-gray-200 text-center">
+                        <div
+                            class="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-gray-300">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <p class="text-gray-500 font-bold text-sm mb-6 uppercase tracking-widest">Login to Review</p>
+                        <a href="{{ url_for('login') }}"
+                            class="inline-block px-10 py-3 bg-black text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-[var(--dynamic-color)] transition-all">Sign
+                            In</a>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
 </section>
+
+<script>
+    function updateQty(delta) {
+        const input = document.getElementById('product-qty');
+        let val = parseInt(input.value) + delta;
+        if (val < 1) val = 1;
+        input.value = val;
+    }
+
+    function addToCartDetailed(productId) {
+        const qty = document.getElementById('product-qty').value;
+        // In this implementation addToCart uses POST and doesn't explicitly take qty in the current theme.js version but can be extended
+        addToCart(productId);
+    }
+</script>
 {% endblock %}
