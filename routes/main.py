@@ -94,8 +94,6 @@ def update_cart(id):
     session['cart'] = cart
     return redirect(url_for('cart'))
 
-<<<<<<< HEAD
-=======
 @app.route('/remove_from_cart/<int:id>', methods=['POST'])
 def remove_from_cart(id):
     product = Product.query.get_or_404(id)
@@ -105,7 +103,6 @@ def remove_from_cart(id):
     flash(f'Removed {product.name} from cart')
     return redirect(url_for('cart'))
 
->>>>>>> a21513a (Add clean requirements.txt and Flask app)
 @app.route('/checkout', methods=['GET', 'POST'])
 @login_required
 def checkout():
