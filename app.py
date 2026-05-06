@@ -9,7 +9,13 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-default-secret-key')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///database.db')
+
+# Database configuration - use SQLite by default for local dev
+db_url = os.environ.get('DATABASE_URL')
+if not db_url or db_url.strip() == '':
+    db_url = 'sqlite:///database.db'
+    
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 if app.config['SQLALCHEMY_DATABASE_URI'].startswith("postgres://"):
     app.config['SQLALCHEMY_DATABASE_URI'] = app.config['SQLALCHEMY_DATABASE_URI'].replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -24,16 +30,26 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# Import routes
-from routes.main import *
-from routes.auth import *
-from routes.admin import *
-
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
 
+# Import routes after app setup to avoid circular imports
+from routes.main import *
+from routes.auth import *
+from routes.admin import *
+
+from init_db import init_db
+
+@app.route('/init-db')
+def db_init():
+    try:
+        init_db()
+        return "Database initialized successfully.", 200
+    except Exception as e:
+        return f"Error: {str(e)}", 500
+
 if __name__ == '__main__':
-    app.run(debug=os.environ.get('FLASK_DEBUG', '0') == '1')
+    app.run( debug=os.environ.get('FLASK_DEBUG', '0') == '1')
 
     

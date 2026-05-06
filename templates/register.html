@@ -1,23 +1,474 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="py-16 bg-white">
-    <div class="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-4xl font-bold text-center mb-12">Register</h1>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    .auth-section {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: url('https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=1600&q=80') center/cover no-repeat,
+                    linear-gradient(135deg, #f5f5f7 0%, #e8e8ec 100%);
+        background-attachment: fixed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow-y: auto;
+        padding: 1.5rem 1rem;
+        z-index: 0;
+        padding-top: max(1.5rem, calc(env(safe-area-inset-top) + 1rem));
+    }
+
+    .auth-section::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(2px);
+        z-index: -1;
+    }
+
+    .glassmorphism-container {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 16px;
+        padding: 2rem 1.5rem;
+        width: 100%;
+        max-width: 350px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px rgba(255, 255, 255, 0.4);
+        position: relative;
+        z-index: 10;
+        max-height: 70vh;
+        overflow-y: auto;
+        margin-top: 10rem;
+    }
+
+    .auth-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 0.3rem;
+        color: #ffffff;
+        letter-spacing: -0.02em;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .auth-subtitle {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.85);
+        margin-bottom: 1.5rem;
+        font-size: 0.85rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-label {
+        display: block;
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+        letter-spacing: 0.3px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.65rem 0.8rem;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        color: #ffffff;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(4px);
+    }
+
+    .form-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .form-input:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    }
+
+    .form-input:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 0.8rem;
+        margin-top: 1rem;
+        background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+        color: #1a1a2e;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(255, 255, 255, 0.4);
+    }
+
+    .submit-btn:active {
+        transform: translateY(0);
+    }
+
+    .auth-link {
+        text-align: center;
+        margin-top: 1.2rem;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 0.8rem;
+    }
+
+    .auth-link a {
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .auth-link a::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: #ffffff;
+        transition: width 0.3s ease;
+    }
+
+    .auth-link a:hover::after {
+        width: 100%;
+    }
+
+    .flash-message {
+        padding: 0.65rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        font-size: 0.8rem;
+        backdrop-filter: blur(4px);
+    }
+
+    .flash-message.error {
+        background: rgba(239, 68, 68, 0.25);
+        border-left: 3px solid #fecaca;
+        color: #fecaca;
+    }
+
+    .flash-message.success {
+        background: rgba(34, 197, 94, 0.25);
+        border-left: 3px solid #86efac;
+        color: #86efac;
+    }
+
+    @media (max-width: 768px) {
+        .auth-section {
+            padding: 1rem;
+            padding-top: max(1rem, calc(env(safe-area-inset-top) + 0.5rem));
+        }
+
+        .glassmorphism-container {
+            max-width: 100%;
+            padding: 1.5rem 1.25rem;
+            margin-top: 7rem;
+        }
+
+        .auth-title {
+            font-size: 1.5rem;
+        }
+
+        .form-input {
+            font-size: 16px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .auth-section {
+            padding: 0.75rem;
+            padding-top: max(0.75rem, calc(env(safe-area-inset-top) + 0.5rem));
+        }
+
+        .glassmorphism-container {
+            padding: 1.25rem 1rem;
+            border-radius: 12px;
+            margin-top: 3rem;
+            max-height: 65vh;
+              margin-top: 5rem;
+        }
+
+        .auth-title {
+            font-size: 1.35rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .auth-subtitle {
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 0.85rem;
+        }
+
+        .form-label {
+            font-size: 0.75rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-input {
+            padding: 0.6rem 0.7rem;
+            font-size: 16px;
+            border-radius: 6px;
+        }
+
+        .submit-btn {
+            padding: 0.7rem;
+            font-size: 0.8rem;
+            margin-top: 0.8rem;
+        }
+
+        .auth-link {
+            margin-top: 1rem;
+            font-size: 0.75rem;
+        }
+    }
+</style>
+
+<section class="auth-section">
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-label {
+        display: block;
+        color: #1a1a2e;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+        letter-spacing: 0.3px;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.65rem 0.8rem;
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        color: #1a1a2e;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(4px);
+    }
+
+    .form-input::placeholder {
+        color: rgba(0, 0, 0, 0.4);
+    }
+
+    .form-input:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.85);
+        border-color: rgba(0, 0, 0, 0.2);
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-input:hover {
+        background: rgba(255, 255, 255, 0.75);
+        border-color: rgba(0, 0, 0, 0.15);
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 0.8rem;
+        margin-top: 1rem;
+        background: linear-gradient(135deg, #1a1a2e 0%, #2a2a4e 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .submit-btn:active {
+        transform: translateY(0);
+    }
+
+    .auth-link {
+        text-align: center;
+        margin-top: 1.2rem;
+        color: #666666;
+        font-size: 0.8rem;
+    }
+
+    .auth-link a {
+        color: #1a1a2e;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .auth-link a::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: #1a1a2e;
+        transition: width 0.3s ease;
+    }
+
+    .auth-link a:hover::after {
+        width: 100%;
+    }
+
+    .flash-message {
+        padding: 0.65rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        font-size: 0.8rem;
+        backdrop-filter: blur(4px);
+    }
+
+    .flash-message.error {
+        background: rgba(239, 68, 68, 0.15);
+        border-left: 3px solid #ef4444;
+        color: #991b1b;
+    }
+
+    .flash-message.success {
+        background: rgba(34, 197, 94, 0.15);
+        border-left: 3px solid #22c55e;
+        color: #15803d;
+    }
+
+    @media (max-width: 640px) {
+        .glassmorphism-container {
+            padding: 1.5rem 1.25rem;
+            max-width: 100%;
+            border-radius: 12px;
+        }
+
+        .auth-title {
+            font-size: 1.5rem;
+        }
+
+        .form-input {
+            font-size: 16px;
+        }
+    }
+</style>
+
+<section class="auth-section">
+    <div class="glassmorphism-container">
+        <h1 class="auth-title">Join VELORA</h1>
+        <p class="auth-subtitle">Create your account and start shopping</p>
         
-        <form action="{{ url_for('register') }}" method="post" class="space-y-6">
-            <div>
-                <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-                <input type="text" id="username" name="username" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary">
+        <!-- Display flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form action="{{ url_for('register') }}" method="post">
+            <!-- Username -->
+            <div class="form-group">
+                <label for="username" class="form-label">Username *</label>
+                <input type="text" id="username" name="username" required 
+                       class="form-input"
+                       placeholder="Choose a username">
+            </div> 
+
+            <!-- Email -->
+            <div class="form-group">
+                <label for="email" class="form-label">Email Address *</label>
+                <input type="email" id="email" name="email" required 
+                       class="form-input"
+                       placeholder="your.email@example.com">
             </div>
-            <div>
-                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input type="password" id="password" name="password" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary">
+
+            <!-- First Name -->
+            <div class="form-group">
+                <label for="first_name" class="form-label">First Name</label>
+                <input type="text" id="first_name" name="first_name" 
+                       class="form-input"
+                       placeholder="Your first name">
             </div>
-            <button type="submit" class="w-full bg-primary text-white py-3 rounded-full hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105">Register</button>
+
+            <!-- Last Name -->
+            <div class="form-group">
+                <label for="last_name" class="form-label">Last Name</label>
+                <input type="text" id="last_name" name="last_name" 
+                       class="form-input"
+                       placeholder="Your last name">
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label for="password" class="form-label">Password *</label>
+                <input type="password" id="password" name="password" required 
+                       class="form-input"
+                       placeholder="Create a strong password">
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="form-group">
+                <label for="confirm_password" class="form-label">Confirm Password *</label>
+                <input type="password" id="confirm_password" name="confirm_password" required 
+                       class="form-input"
+                       placeholder="Re-enter your password">
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="submit-btn">
+                Create Account
+            </button>
         </form>
         
-        <p class="text-center mt-4">Already have an account? <a href="{{ url_for('login') }}" class="text-primary hover:underline">Login</a></p>
+        <p class="auth-link">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
     </div>
 </section>
 {% endblock %}

@@ -11,6 +11,125 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .header-v1 {
+            position: relative;
+            z-index: 100;
+        }
+
+        .header-v1.fixed-header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+        }
+
+        .hamburger-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 101;
+            margin-left: 1rem;
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            flex-direction: column;
+            justify-content: flex-start;
+            padding-top: 5rem;
+            z-index: 99;
+        }
+
+        .mobile-menu.active {
+            display: flex;
+        }
+
+        .mobile-menu a {
+            padding: 1rem;
+            color: white;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            padding-left: 1.5rem;
+        }
+
+        .menu-desktop {
+            display: flex;
+        }
+
+        @media (max-width: 768px) {
+            .container-menu-desktop {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .header-v1 {
+                padding: 0.75rem 0.5rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+            }
+
+            .wrap-menu-desktop {
+                display: flex;
+                align-items: center;
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .menu-desktop {
+                display: none;
+            }
+
+            .hamburger-btn {
+                display: block;
+            }
+
+            .logo {
+                flex-grow: 1;
+                justify-content: center;
+            }
+
+            .logo span {
+                font-size: 1.5rem !important;
+            }
+
+            .wrap-icon-header {
+                order: 3;
+                width: 100%;
+                justify-content: flex-end;
+                gap: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-v1 {
+                padding: 0.5rem 0.25rem;
+            }
+
+            .logo span {
+                font-size: 1.25rem !important;
+            }
+
+            .icon-header-item {
+                padding: 0.5rem 0.75rem !important;
+            }
+        }
+    </style>
     {% block extra_css %}{% endblock %}
 </head>
 
@@ -19,13 +138,25 @@
     <header class="header-v1">
         <div class="container-menu-desktop" id="header-container">
             <div class="wrap-menu-desktop">
+                <!-- Back Button -->
+                <button id="backBtn" onclick="window.history.back()" class="icon-header-item hov-cl1 trans-04 p-l-22 p-r-11 mr-4 text-xl hover:text-[var(--dynamic-color)] transition-colors {% if request.endpoint == 'index' %}hidden{% endif %}" title="Go back">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+
                 <!-- Logo -->
                 <a href="{{ url_for('index') }}" class="logo flex items-center">
                     <span id="logo-velora"
                         class="text-3xl font-black tracking-tighter transition-colors duration-500">VELORA</span>
                     <span id="logo-store"
-                        class="text-3xl font-black tracking-tighter text-white ml-2 transition-colors duration-500">STORE</span>
+                        class="text-3xl font-black tracking-tighter text-bg-secondary ml-2 transition-colors duration-500">STORE</span>
                 </a>
+
+
+                
+         <!-- Hamburger Menu Button -->
+                <button class="hamburger-btn" id="hamburger-menu" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
 
                 <!-- Menu -->
                 <div class="menu-desktop">
@@ -85,9 +216,31 @@
                         style="color: inherit;">Login</a>
                     {% endif %}
                 </div>
+
+                
             </div>
+
         </div>
     </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+        <a href="{{ url_for('index') }}" onclick="closeMobileMenu()">Home</a>
+        <a href="{{ url_for('shop') }}" onclick="closeMobileMenu()">Shop</a>
+        <a href="{{ url_for('features') }}" onclick="closeMobileMenu()">Features</a>
+        <a href="{{ url_for('about') }}" onclick="closeMobileMenu()">About</a>
+        <a href="{{ url_for('contact') }}" onclick="closeMobileMenu()">Contact</a>
+        <a href="{{ url_for('help') }}" onclick="closeMobileMenu()">Help</a>
+        <a href="{{ url_for('cart') }}" onclick="closeMobileMenu()">Cart</a>
+        <a href="{{ url_for('wishlist') }}" onclick="closeMobileMenu()">Wishlist</a>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('dashboard') }}" onclick="closeMobileMenu()">Dashboard</a>
+        <a href="{{ url_for('logout') }}" onclick="closeMobileMenu()">Logout</a>
+        {% else %}
+        <a href="{{ url_for('login') }}" onclick="closeMobileMenu()">Login</a>
+        <a href="{{ url_for('register') }}" onclick="closeMobileMenu()">Register</a>
+        {% endif %}
+    </div>
 
     <!-- Modal Search -->
     <div id="search-modal"
@@ -162,7 +315,7 @@
                 </div>
             </div>
 
-            <div class="mt-16 pt-8 border-t border-gray-700 text-center">
+            <div class="mt-16 pt-8 border-t border-gray-700 text-center">            CREATE DATABASE velora_store;
                 <p>Copyright &copy; 2026 All rights reserved | This Website is made with <i
                         class="fa fa-heart text-accent-color"></i> by Dylan Sparks</p>
             </div>
@@ -171,6 +324,25 @@
 
     <!-- Theme JS -->
     <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('active');
+        }
+
+        function closeMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.remove('active');
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('mobile-menu');
+            const hamburger = document.getElementById('hamburger-menu');
+            if (!menu.contains(event.target) && !hamburger.contains(event.target)) {
+                menu.classList.remove('active');
+            }
+        });
+
         window.addEventListener('scroll', function () {
             const header = document.getElementById('header-container');
             const logoStore = document.getElementById('logo-store');
@@ -185,6 +357,34 @@
         });
         // Initial set
         document.getElementById('logo-store').style.color = '#333';
+
+
+       // back to top button
+       const backToTopBtn = document.createElement('button');       
+backToTopBtn.id = 'backToTop';
+        backToTopBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+        backToTopBtn.className = 'fixed bottom-2 right-4 p-1 bg-gray-600 text-white rounded-full shadow-lg hover:bg-gray-700 transition-opacity opacity-0 pointer-events-none';
+        document.body.appendChild(backToTopBtn);
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+            }
+        });
+
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+       // Hide back button on home page
+  if (
+    window.location.pathname === "/" ||
+    window.location.pathname.includes("index")
+  ) {
+    document.getElementById("backBtn").style.display = "none";
+  }
     </script>
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
     <script src="{{ url_for('static', filename='js/slider.js') }}"></script>
@@ -192,3 +392,4 @@
 </body>
 
 </html>
+

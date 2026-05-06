@@ -94,6 +94,7 @@ def update_cart(id):
     session['cart'] = cart
     return redirect(url_for('cart'))
 
+<<<<<<< HEAD
 @app.route('/remove_from_cart/<int:id>', methods=['POST'])
 def remove_from_cart(id):
     product = Product.query.get_or_404(id)
@@ -101,6 +102,16 @@ def remove_from_cart(id):
     cart.pop(str(id), None)
     session['cart'] = cart
     flash(f'Removed {product.name} from cart')
+=======
+
+@app.route('/remove_from_cart/<int:id>', methods=['POST'])
+def remove_from_cart(id):
+    cart = session.get('cart', {})
+    # Remove the item if present
+    cart.pop(str(id), None)
+    session['cart'] = cart
+    flash('Item removed from cart')
+>>>>>>> af7a3d7 (Update ecommerce_app files and documentation)
     return redirect(url_for('cart'))
 
 @app.route('/checkout', methods=['GET', 'POST'])

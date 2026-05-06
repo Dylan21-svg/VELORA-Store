@@ -10,7 +10,15 @@ def init_db():
         admin = User.query.filter_by(username='admin').first()
         if not admin:
             print("Creating admin user...")
-            admin = User(username='admin', password=generate_password_hash('VeloraAdmin2026!@#Secure'), is_admin=True)
+            admin = User(
+                username='admin',
+                email='admin@velora.com',
+                first_name='Admin',
+                last_name='User',
+                phone='+1-555-0000',
+                password=generate_password_hash('VeloraAdmin2026!@#Secure'),
+                is_admin=True
+            )
             db.session.add(admin)
             db.session.commit()
         
