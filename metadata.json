@@ -1,0 +1,6 @@
+{
+  "name": "Velora Store",
+  "description": "A luxury e-commerce fashion store with dynamic theming, shopping cart, mobile money/PayPal checkout, customer accounts, and an admin dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

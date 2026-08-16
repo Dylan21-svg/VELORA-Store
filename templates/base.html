@@ -11,125 +11,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <style>
-        .header-v1 {
-            position: relative;
-            z-index: 100;
-        }
-
-        .header-v1.fixed-header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 100;
-        }
-
-        .hamburger-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: inherit;
-            font-size: 1.5rem;
-            cursor: pointer;
-            z-index: 101;
-            margin-left: 1rem;
-        }
-
-        .mobile-menu {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.95);
-            flex-direction: column;
-            justify-content: flex-start;
-            padding-top: 5rem;
-            z-index: 99;
-        }
-
-        .mobile-menu.active {
-            display: flex;
-        }
-
-        .mobile-menu a {
-            padding: 1rem;
-            color: white;
-            text-decoration: none;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .mobile-menu a:hover {
-            background: rgba(255, 255, 255, 0.1);
-            padding-left: 1.5rem;
-        }
-
-        .menu-desktop {
-            display: flex;
-        }
-
-        @media (max-width: 768px) {
-            .container-menu-desktop {
-                flex-wrap: wrap;
-                gap: 0.5rem;
-            }
-
-            .header-v1 {
-                padding: 0.75rem 0.5rem;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                width: 100%;
-            }
-
-            .wrap-menu-desktop {
-                display: flex;
-                align-items: center;
-                width: 100%;
-                justify-content: space-between;
-            }
-
-            .menu-desktop {
-                display: none;
-            }
-
-            .hamburger-btn {
-                display: block;
-            }
-
-            .logo {
-                flex-grow: 1;
-                justify-content: center;
-            }
-
-            .logo span {
-                font-size: 1.5rem !important;
-            }
-
-            .wrap-icon-header {
-                order: 3;
-                width: 100%;
-                justify-content: flex-end;
-                gap: 0.5rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header-v1 {
-                padding: 0.5rem 0.25rem;
-            }
-
-            .logo span {
-                font-size: 1.25rem !important;
-            }
-
-            .icon-header-item {
-                padding: 0.5rem 0.75rem !important;
-            }
-        }
-    </style>
     {% block extra_css %}{% endblock %}
 </head>
 
@@ -138,129 +19,215 @@
     <header class="header-v1">
         <div class="container-menu-desktop" id="header-container">
             <div class="wrap-menu-desktop">
-                <!-- Back Button -->
-                <button id="backBtn" onclick="window.history.back()" class="icon-header-item hov-cl1 trans-04 p-l-22 p-r-11 mr-4 text-xl hover:text-[var(--dynamic-color)] transition-colors {% if request.endpoint == 'index' %}hidden{% endif %}" title="Go back">
-                    <i class="fas fa-arrow-left"></i>
+                <!-- Mobile Hamburger Button -->
+                <button type="button" onclick="toggleMobileNav()" aria-label="Open Navigation"
+                    class="lg:hidden text-2xl text-gray-800 hover:text-[var(--dynamic-color)] p-2 focus:outline-none cursor-pointer">
+                    <i class="fas fa-bars"></i>
                 </button>
 
                 <!-- Logo -->
                 <a href="{{ url_for('index') }}" class="logo flex items-center">
                     <span id="logo-velora"
-                        class="text-3xl font-black tracking-tighter transition-colors duration-500">VELORA</span>
+                        class="text-2xl sm:text-3xl font-black tracking-tighter transition-colors duration-500">VELORA</span>
                     <span id="logo-store"
-                        class="text-3xl font-black tracking-tighter text-bg-secondary ml-2 transition-colors duration-500">STORE</span>
+                        class="text-2xl sm:text-3xl font-black tracking-tighter text-gray-800 ml-1.5 transition-colors duration-500">STORE</span>
                 </a>
 
-
-                
-         <!-- Hamburger Menu Button -->
-                <button class="hamburger-btn" id="hamburger-menu" onclick="toggleMobileMenu()">
-                    <i class="fas fa-bars"></i>
-                </button>
-
-                <!-- Menu -->
-                <div class="menu-desktop">
-                    <ul class="main-menu">
-                        <li class="{% if request.endpoint == 'index' %}active-menu{% endif %}">
-                            <a href="{{ url_for('index') }}">Home</a>
+                <!-- Desktop Menu -->
+                <div class="menu-desktop hidden lg:flex">
+                    <ul class="main-menu flex items-center space-x-8">
+                        <li class="relative {% if request.endpoint == 'index' %}active-menu{% endif %}">
+                            <a href="{{ url_for('index') }}" class="py-2 text-sm font-bold tracking-wide transition-colors">Home</a>
+                            {% if request.endpoint == 'index' %}<span class="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--dynamic-color)]"></span>{% endif %}
                         </li>
-                        <li class="{% if request.endpoint == 'shop' %}active-menu{% endif %}">
-                            <a href="{{ url_for('shop') }}">Shop</a>
+                        <li class="relative {% if request.endpoint == 'shop' %}active-menu{% endif %}">
+                            <a href="{{ url_for('shop') }}" class="py-2 text-sm font-bold tracking-wide transition-colors">Shop</a>
+                            {% if request.endpoint == 'shop' %}<span class="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--dynamic-color)]"></span>{% endif %}
                         </li>
-                        <li class="{% if request.endpoint == 'features' %}active-menu{% endif %}">
-                            <a href="{{ url_for('features') }}">Features</a>
+                        <li class="relative {% if request.endpoint == 'features' %}active-menu{% endif %}">
+                            <a href="{{ url_for('features') }}" class="py-2 text-sm font-bold tracking-wide transition-colors">Features</a>
+                            {% if request.endpoint == 'features' %}<span class="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--dynamic-color)]"></span>{% endif %}
                         </li>
-                        <li class="{% if request.endpoint == 'about' %}active-menu{% endif %}">
-                            <a href="{{ url_for('about') }}">About</a>
+                        <li class="relative {% if request.endpoint == 'about' %}active-menu{% endif %}">
+                            <a href="{{ url_for('about') }}" class="py-2 text-sm font-bold tracking-wide transition-colors">About</a>
+                            {% if request.endpoint == 'about' %}<span class="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--dynamic-color)]"></span>{% endif %}
                         </li>
-                        <li class="{% if request.endpoint == 'contact' %}active-menu{% endif %}">
-                            <a href="{{ url_for('contact') }}">Contact</a>
+                        <li class="relative {% if request.endpoint == 'contact' %}active-menu{% endif %}">
+                            <a href="{{ url_for('contact') }}" class="py-2 text-sm font-bold tracking-wide transition-colors">Contact</a>
+                            {% if request.endpoint == 'contact' %}<span class="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--dynamic-color)]"></span>{% endif %}
                         </li>
                         {% if current_user.is_admin %}
-                        <li>
-                            <a href="{{ url_for('admin_dashboard') }}?key=velora2026">Admin</a>
+                        <li class="relative">
+                            <a href="{{ url_for('admin_dashboard') }}?key=velora2026" class="py-2 text-sm font-bold text-red-600 hover:text-red-700 tracking-wide">Admin</a>
                         </li>
                         {% endif %}
                     </ul>
                 </div>
 
-                <!-- Icon header -->
-                <div class="wrap-icon-header">
-                    <div
-                        class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 js-show-modal-search cursor-pointer">
+                <!-- Desktop Search Bar -->
+                <div class="header-search-wrap hidden sm:flex items-center mx-2 lg:mx-4">
+                    <form action="{{ url_for('search') }}" method="GET" class="relative flex items-center group">
+                        <input type="text"
+                            name="q"
+                            value="{{ query if query else '' }}"
+                            placeholder="Search products..."
+                            class="w-36 md:w-52 lg:w-64 focus:w-72 bg-gray-100/90 hover:bg-gray-100 focus:bg-white text-gray-800 text-xs font-medium pl-9 pr-7 py-2 rounded-full border border-gray-200 focus:border-black focus:ring-2 focus:ring-black/10 outline-none transition-all duration-300 placeholder-gray-400">
+                        <button type="submit" aria-label="Search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-gray-600 group-focus-within:text-black transition-colors cursor-pointer">
+                            <i class="fas fa-search text-xs"></i>
+                        </button>
+                        {% if query %}
+                        <a href="{{ url_for('shop') }}" aria-label="Clear search" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 text-xs" title="Clear search">
+                            <i class="fas fa-times"></i>
+                        </a>
+                        {% endif %}
+                    </form>
+                </div>
+
+                <!-- Icons & User Header -->
+                <div class="wrap-icon-header flex items-center space-x-4 sm:space-x-6">
+                    <div class="sm:hidden text-lg text-gray-700 hover:text-black cursor-pointer js-show-modal-search" title="Search">
                         <i class="fas fa-search"></i>
                     </div>
 
-                    <a href="{{ url_for('cart') }}"
-                        class="icon-header-item icon-header-noti hov-cl1 trans-04 p-l-22 p-r-11" data-notify="0"
-                        id="cart-icon">
-                        <i class="fas fa-shopping-cart"></i>
-                    </a>
-
                     <a href="{{ url_for('wishlist') }}"
-                        class="icon-header-item icon-header-noti hov-cl1 trans-04 p-l-22 p-r-11" data-notify="0"
-                        id="wishlist-icon">
+                        class="icon-header-item icon-header-noti text-lg text-gray-700 hover:text-[var(--dynamic-color)] transition-colors" data-notify="0"
+                        id="wishlist-icon" title="Wishlist">
                         <i class="fas fa-heart"></i>
                     </a>
 
-                    {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('dashboard') }}" class="icon-header-item hov-cl1 trans-04 p-l-22 p-r-11">
-                        <i class="fas fa-user-circle"></i>
+                    <a href="{{ url_for('cart') }}"
+                        class="icon-header-item icon-header-noti text-lg text-gray-700 hover:text-[var(--dynamic-color)] transition-colors" data-notify="0"
+                        id="cart-icon" title="Shopping Bag">
+                        <i class="fas fa-shopping-bag"></i>
                     </a>
-                    <a href="{{ url_for('logout') }}"
-                        class="text-xs font-bold uppercase tracking-wider text-white hov-cl1"
-                        style="color: inherit;">Logout</a>
+
+                    {% if current_user.is_authenticated %}
+                    <div class="flex items-center space-x-2 border-l border-gray-200 pl-3">
+                        <a href="{{ url_for('dashboard') }}" class="text-gray-700 hover:text-black transition-colors" title="Account Dashboard">
+                            <i class="fas fa-user-circle text-xl"></i>
+                        </a>
+                        <a href="{{ url_for('logout') }}"
+                            class="hidden md:inline-block text-[11px] font-black uppercase tracking-wider text-gray-500 hover:text-black">Logout</a>
+                    </div>
                     {% else %}
                     <a href="{{ url_for('login') }}"
-                        class="text-xs font-bold uppercase tracking-wider text-white hov-cl1"
-                        style="color: inherit;">Login</a>
+                        class="hidden sm:inline-block px-4 py-2 bg-black text-white rounded-xl text-[11px] font-black uppercase tracking-wider hover:bg-[var(--dynamic-color)] transition-all">
+                        Sign In
+                    </a>
                     {% endif %}
                 </div>
-
-                
             </div>
-
         </div>
     </header>
 
-    <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobile-menu">
-        <a href="{{ url_for('index') }}" onclick="closeMobileMenu()">Home</a>
-        <a href="{{ url_for('shop') }}" onclick="closeMobileMenu()">Shop</a>
-        <a href="{{ url_for('features') }}" onclick="closeMobileMenu()">Features</a>
-        <a href="{{ url_for('about') }}" onclick="closeMobileMenu()">About</a>
-        <a href="{{ url_for('contact') }}" onclick="closeMobileMenu()">Contact</a>
-        <a href="{{ url_for('help') }}" onclick="closeMobileMenu()">Help</a>
-        <a href="{{ url_for('cart') }}" onclick="closeMobileMenu()">Cart</a>
-        <a href="{{ url_for('wishlist') }}" onclick="closeMobileMenu()">Wishlist</a>
-        {% if current_user.is_authenticated %}
-        <a href="{{ url_for('dashboard') }}" onclick="closeMobileMenu()">Dashboard</a>
-        <a href="{{ url_for('logout') }}" onclick="closeMobileMenu()">Logout</a>
-        {% else %}
-        <a href="{{ url_for('login') }}" onclick="closeMobileMenu()">Login</a>
-        <a href="{{ url_for('register') }}" onclick="closeMobileMenu()">Register</a>
-        {% endif %}
+    <!-- Mobile Slide-out Drawer -->
+    <div id="mobile-nav-backdrop" onclick="toggleMobileNav()"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[1500] opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <div id="mobile-nav-drawer"
+        class="fixed top-0 left-0 bottom-0 w-80 max-w-[85vw] bg-white z-[1600] shadow-2xl p-6 flex flex-col justify-between transform -translate-x-full transition-transform duration-300 ease-out">
+        <div>
+            <!-- Drawer Header -->
+            <div class="flex items-center justify-between pb-6 border-b border-gray-100">
+                <div class="flex items-center">
+                    <span class="text-2xl font-black tracking-tighter text-[var(--dynamic-color)]">VELORA</span>
+                    <span class="text-2xl font-black tracking-tighter text-gray-900 ml-1">STORE</span>
+                </div>
+                <button type="button" onclick="toggleMobileNav()" aria-label="Close Navigation"
+                    class="text-xl text-gray-400 hover:text-black p-2 cursor-pointer">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Search Input -->
+            <form action="{{ url_for('search') }}" method="GET" class="relative mt-6">
+                <input type="text" name="q" placeholder="Search products..."
+                    class="w-full bg-gray-100 text-gray-800 text-xs font-bold pl-9 pr-4 py-3 rounded-xl border border-transparent focus:border-black outline-none">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+            </form>
+
+            <!-- Navigation Links -->
+            <nav class="mt-8 space-y-2">
+                <a href="{{ url_for('index') }}"
+                    class="flex items-center justify-between p-3 rounded-xl font-bold text-sm {% if request.endpoint == 'index' %}bg-gray-100 text-black font-black{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
+                    <span>Home</span>
+                    <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+                </a>
+                <a href="{{ url_for('shop') }}"
+                    class="flex items-center justify-between p-3 rounded-xl font-bold text-sm {% if request.endpoint == 'shop' %}bg-gray-100 text-black font-black{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
+                    <span>Shop Catalog</span>
+                    <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+                </a>
+                <a href="{{ url_for('features') }}"
+                    class="flex items-center justify-between p-3 rounded-xl font-bold text-sm {% if request.endpoint == 'features' %}bg-gray-100 text-black font-black{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
+                    <span>Features</span>
+                    <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+                </a>
+                <a href="{{ url_for('about') }}"
+                    class="flex items-center justify-between p-3 rounded-xl font-bold text-sm {% if request.endpoint == 'about' %}bg-gray-100 text-black font-black{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
+                    <span>About Us</span>
+                    <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+                </a>
+                <a href="{{ url_for('contact') }}"
+                    class="flex items-center justify-between p-3 rounded-xl font-bold text-sm {% if request.endpoint == 'contact' %}bg-gray-100 text-black font-black{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
+                    <span>Contact</span>
+                    <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+                </a>
+                {% if current_user.is_admin %}
+                <a href="{{ url_for('admin_dashboard') }}?key=velora2026"
+                    class="flex items-center justify-between p-3 rounded-xl font-bold text-sm text-red-600 hover:bg-red-50">
+                    <span>Admin Dashboard</span>
+                    <i class="fas fa-shield-alt text-xs"></i>
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+
+        <!-- Drawer Footer Account -->
+        <div class="pt-6 border-t border-gray-100">
+            {% if current_user.is_authenticated %}
+            <div class="space-y-2">
+                <a href="{{ url_for('dashboard') }}" class="flex items-center space-x-3 p-3 rounded-xl bg-gray-50 text-gray-900 font-bold text-xs">
+                    <i class="fas fa-user-circle text-lg"></i>
+                    <span>{{ current_user.username }}'s Dashboard</span>
+                </a>
+                <a href="{{ url_for('logout') }}" class="block text-center py-2 text-xs font-black uppercase text-gray-500 hover:text-red-500">
+                    Sign Out
+                </a>
+            </div>
+            {% else %}
+            <div class="grid grid-cols-2 gap-3">
+                <a href="{{ url_for('login') }}" class="text-center py-3 bg-black text-white rounded-xl text-xs font-black uppercase tracking-wider">
+                    Login
+                </a>
+                <a href="{{ url_for('register') }}" class="text-center py-3 bg-gray-100 text-gray-900 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-gray-200">
+                    Register
+                </a>
+            </div>
+            {% endif %}
+        </div>
     </div>
 
-    <!-- Modal Search -->
+    <!-- Modal Search (Overlay) -->
     <div id="search-modal"
-        class="fixed inset-0 z-[2000] invisible opacity-0 transition-all duration-300 flex items-center justify-center modal-search-header">
-        <button class="absolute top-8 right-8 text-4xl text-gray-500 hover:text-black transition-colors"
+        class="fixed inset-0 z-[2000] invisible opacity-0 transition-all duration-300 flex items-center justify-center modal-search-header bg-white/95 backdrop-blur-md">
+        <button class="absolute top-8 right-8 text-3xl text-gray-400 hover:text-black transition-colors"
             onclick="hideSearchModal()">
             <i class="fas fa-times"></i>
         </button>
         <div class="w-full max-w-3xl px-6">
             <form action="{{ url_for('search') }}" method="GET" class="relative group">
-                <input type="text" name="q" placeholder="Search for products..."
-                    class="w-full text-5xl font-bold bg-transparent border-b-4 border-gray-200 focus:border-black outline-none pb-4 transition-colors">
+                <input type="text" name="q" placeholder="Type product name and hit Enter..."
+                    class="w-full text-3xl sm:text-5xl font-black bg-transparent border-b-4 border-gray-200 focus:border-black outline-none pb-4 transition-colors text-gray-900 placeholder:text-gray-300">
                 <button type="submit"
-                    class="absolute right-0 top-1/2 -translate-y-1/2 text-4xl text-gray-300 group-focus-within:text-black transition-colors">
+                    class="absolute right-0 top-1/2 -translate-y-1/2 text-3xl text-gray-300 group-focus-within:text-black transition-colors">
                     <i class="fas fa-search"></i>
                 </button>
             </form>
         </div>
     </div>
 
+    <!-- Main Content -->
     <main>
         {% block content %}{% endblock %}
     </main>
@@ -272,119 +239,111 @@
                 <div>
                     <h4 class="footer-title">Categories</h4>
                     <ul class="footer-links">
-                        <li><a href="{{ url_for('shop') }}?category=1">Women</a></li>
-                        <li><a href="{{ url_for('shop') }}?category=1">Men</a></li>
-                        <li><a href="{{ url_for('shop') }}?category=2">Shoes</a></li>
-                        <li><a href="{{ url_for('shop') }}?category=3">Watches</a></li>
+                        <li><a href="{{ url_for('shop') }}?category=1">Women Collection</a></li>
+                        <li><a href="{{ url_for('shop') }}?category=1">Men Collection</a></li>
+                        <li><a href="{{ url_for('shop') }}?category=2">Footwear &amp; Shoes</a></li>
+                        <li><a href="{{ url_for('shop') }}?category=3">Luxury Watches</a></li>
                     </ul>
                 </div>
 
                 <div>
-                    <h4 class="footer-title">Help</h4>
+                    <h4 class="footer-title">Customer Care</h4>
                     <ul class="footer-links">
                         <li><a href="{{ url_for('dashboard') }}">Track Order</a></li>
-                        <li><a href="{{ url_for('help') }}">Returns</a></li>
-                        <li><a href="{{ url_for('help') }}">Shipping</a></li>
-                        <li><a href="{{ url_for('help') }}">FAQs</a></li>
+                        <li><a href="{{ url_for('help') }}">Returns &amp; Exchanges</a></li>
+                        <li><a href="{{ url_for('help') }}">Shipping Policy</a></li>
+                        <li><a href="{{ url_for('help') }}">Help &amp; FAQs</a></li>
                     </ul>
                 </div>
 
                 <div>
                     <h4 class="footer-title">Get in touch</h4>
-                    <p class="leading-relaxed">
-                        Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us
-                        on (+1) 96 716 6879
+                    <p class="leading-relaxed text-sm text-gray-400">
+                        Any questions? Visit our boutique on 8th floor, 379 Hudson St, New York, NY 10018 or call our concierge on (+1) 96 716 6879.
                     </p>
                     <div class="flex space-x-4 mt-6">
-                        <a href="#" class="text-xl hover:text-white transition-colors"><i
-                                class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-xl hover:text-white transition-colors"><i
-                                class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-xl hover:text-white transition-colors"><i
-                                class="fab fa-pinterest-p"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 text-gray-300 flex items-center justify-center hover:bg-[var(--dynamic-color)] hover:text-white transition-all"><i
+                                class="fab fa-facebook-f text-sm"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 text-gray-300 flex items-center justify-center hover:bg-[var(--dynamic-color)] hover:text-white transition-all"><i
+                                class="fab fa-instagram text-sm"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 text-gray-300 flex items-center justify-center hover:bg-[var(--dynamic-color)] hover:text-white transition-all"><i
+                                class="fab fa-pinterest-p text-sm"></i></a>
                     </div>
                 </div>
 
                 <div>
-                    <h4 class="footer-title">Newsletter</h4>
-                    <form action="#" class="newsletter-form">
-                        <input type="email" name="email" placeholder="email@example.com" class="newsletter-input">
+                    <h4 class="footer-title">Exclusive Access</h4>
+                    <p class="text-xs text-gray-400 mb-4">Be the first to know about private sales, new arrivals, and special drops.</p>
+                    <form action="#" onsubmit="event.preventDefault(); showNotification('Subscribed to newsletter!');" class="newsletter-form">
+                        <input type="email" name="email" required placeholder="email@example.com" class="newsletter-input">
                         <div class="newsletter-focus"></div>
+                        <button type="submit" class="btn-newsletter trans-04 mt-4 w-full cursor-pointer">Subscribe</button>
                     </form>
-                    <button class="btn-newsletter trans-04">Subscribe</button>
                 </div>
             </div>
 
-            <div class="mt-16 pt-8 border-t border-gray-700 text-center">            CREATE DATABASE velora_store;
-                <p>Copyright &copy; 2026 All rights reserved | This Website is made with <i
-                        class="fa fa-heart text-accent-color"></i> by Dylan Sparks</p>
+            <div class="mt-16 pt-8 border-t border-gray-800 text-center text-xs text-gray-500">
+                <p>Copyright &copy; 2026 Velora Store. All rights reserved. Made with <i class="fa fa-heart text-red-500"></i> for an exceptional shopping experience.</p>
             </div>
         </div>
     </footer>
 
-    <!-- Theme JS -->
+    <!-- Back to Top Button -->
+    <button id="btn-back-to-top"
+        aria-label="Back to top"
+        title="Back to top"
+        class="fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full bg-black text-white shadow-2xl flex items-center justify-center opacity-0 pointer-events-none translate-y-4 hover:scale-110 hover:bg-[var(--dynamic-color)] transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-[var(--dynamic-color)]/30 cursor-pointer">
+        <i class="fas fa-chevron-up text-base"></i>
+    </button>
+
+    <!-- Theme JS & Core Scripts -->
     <script>
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('active');
-        }
-
-        function closeMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.remove('active');
-        }
-
-        // Close menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const menu = document.getElementById('mobile-menu');
-            const hamburger = document.getElementById('hamburger-menu');
-            if (!menu.contains(event.target) && !hamburger.contains(event.target)) {
-                menu.classList.remove('active');
-            }
-        });
+        const backToTopBtn = document.getElementById('btn-back-to-top');
+        const header = document.getElementById('header-container');
 
         window.addEventListener('scroll', function () {
-            const header = document.getElementById('header-container');
-            const logoStore = document.getElementById('logo-store');
-
             if (window.scrollY > 50) {
                 header.classList.add('fixed-header');
             } else {
                 header.classList.remove('fixed-header');
             }
-            // Ensure logo store is visible on white background
-            logoStore.style.color = '#333';
-        });
-        // Initial set
-        document.getElementById('logo-store').style.color = '#333';
 
-
-       // back to top button
-       const backToTopBtn = document.createElement('button');       
-backToTopBtn.id = 'backToTop';
-        backToTopBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
-        backToTopBtn.className = 'fixed bottom-2 right-4 p-1 bg-gray-600 text-white rounded-full shadow-lg hover:bg-gray-700 transition-opacity opacity-0 pointer-events-none';
-        document.body.appendChild(backToTopBtn);
-
-        window.addEventListener('scroll', () => {
+            // Back to Top button toggle visibility
             if (window.scrollY > 300) {
-                backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+                backToTopBtn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+                backToTopBtn.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
             } else {
-                backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+                backToTopBtn.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
+                backToTopBtn.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
             }
         });
 
-        backToTopBtn.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Smooth scroll to top on click
+        backToTopBtn.addEventListener('click', function () {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         });
 
-       // Hide back button on home page
-  if (
-    window.location.pathname === "/" ||
-    window.location.pathname.includes("index")
-  ) {
-    document.getElementById("backBtn").style.display = "none";
-  }
+        // Mobile drawer toggling
+        function toggleMobileNav() {
+            const drawer = document.getElementById('mobile-nav-drawer');
+            const backdrop = document.getElementById('mobile-nav-backdrop');
+            const isClosed = drawer.classList.contains('-translate-x-full');
+
+            if (isClosed) {
+                drawer.classList.remove('-translate-x-full');
+                backdrop.classList.remove('opacity-0', 'pointer-events-none');
+                backdrop.classList.add('opacity-100', 'pointer-events-auto');
+                document.body.style.overflow = 'hidden';
+            } else {
+                drawer.classList.add('-translate-x-full');
+                backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+                backdrop.classList.add('opacity-0', 'pointer-events-none');
+                document.body.style.overflow = '';
+            }
+        }
     </script>
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
     <script src="{{ url_for('static', filename='js/slider.js') }}"></script>
@@ -392,4 +351,3 @@ backToTopBtn.id = 'backToTop';
 </body>
 
 </html>
-

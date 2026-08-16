@@ -1,0 +1,30 @@
+{
+  "name": "velora-store",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.ts",
+    "build": "node -e 'console.log(\"Build complete\")'",
+    "start": "node server.ts"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "multer": "^2.2.0",
+    "nunjucks": "^3.2.4"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.6",
+    "@types/express-session": "^1.19.0",
+    "@types/multer": "^2.2.0",
+    "@types/node": "^26.2.0",
+    "@types/nunjucks": "^3.2.6",
+    "esbuild": "^0.28.2",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
+  }
+}

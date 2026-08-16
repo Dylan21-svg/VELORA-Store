@@ -24,7 +24,7 @@
 
         <!-- Slide 2: Men Collection -->
         <div class="hero-slide-item"
-            style="background-image: url('{{ url_for('static', filename='images/damson1.jpeg') }}');">
+            style="background-image: url('{{ url_for('static', filename='images/download_4.jpeg') }}');">
             <div class="hero-text-wrap">
                 <div class="hero-subtitle">
                     Men Collection 2026
@@ -136,12 +136,12 @@
         <!-- Product Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
             {% for product in featured_products %}
-            <div class="group h-full flex flex-col animate-fade-in-up"
+            <div class="group h-full flex flex-col animate-fade-in-up cursor-pointer"
                 style="animation-delay: {{ loop.index0 * 0.1 }}s;">
                 <div
                     class="relative overflow-hidden bg-gray-50 h-[400px] rounded-3xl group-hover:shadow-2xl transition-all duration-500 border border-transparent group-hover:border-gray-100">
                     <img src="{{ product.image_url }}" alt="{{ product.name }}"
-                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        class="w-full h-full object-cover transform duration-700 ease-out group-hover:scale-110 group-hover:rotate-0.5 will-change-transform">
                     <div
                         class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/20 backdrop-blur-[2px]">
                         <a href="{{ url_for('product', id=product.id) }}"
@@ -181,5 +181,4 @@
         </div>
     </div>
 </section>
-<br>ecommerce_app/static/images
 {% endblock %}

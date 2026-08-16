@@ -61,13 +61,14 @@ h6 {
 }
 
 .wrap-menu-desktop {
-    max-width: 1200px;
+    max-width: 1360px;
     margin: 0 auto;
     height: 84px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 15px;
+    padding: 0 20px;
+    gap: 15px;
 }
 
 .fixed-header {

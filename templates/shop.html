@@ -1,122 +1,170 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="bg-gray-50 p-t-100 p-b-140 min-h-screen">
+<div class="bg-gray-50/60 p-t-100 p-b-140 min-h-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16 animate-fade-in-down">
-            <h1 class="text-5xl font-black text-gray-600 mb-4 uppercase">OUR SHOP</h1>
-            <p class="text-gray-400 font-medium uppercase tracking-[0.2em] text-sm">Discover your next favorite style
-            </p>
+        <!-- Page Title -->
+        <div class="text-center mb-12 animate-fade-in-down">
+            <span class="text-xs font-black uppercase tracking-[0.25em] text-[var(--dynamic-color)]">Catalog & Collections</span>
+            <h1 class="text-4xl sm:text-5xl font-black text-gray-900 mb-3 uppercase tracking-tight">Our Shop</h1>
+            <p class="text-gray-400 font-medium uppercase tracking-[0.2em] text-xs">Discover your next favorite style</p>
         </div>
 
-        <!-- Filter Categories -->
-        <div
-            class="flex-w flex-l-m filter-tope-group m-b-52 space-x-12 border-b border-gray-100 pb-0 mb-12 flex justify-center sticky top-20 bg-gray-50/80 backdrop-blur-md z-40 py-4 transition-all duration-500">
-            <a href="{{ url_for('shop') }}"
-                class="stext-106 cl6 trans-04 font-black uppercase tracking-widest text-xs pb-4 border-b-2 transition-all {% if not current_category %}text-black border-black{% else %}text-gray-300 border-transparent hover:text-black hover:border-black{% endif %}">
+        <!-- Filter Categories Tabs -->
+        <div class="filter-tope-group mb-8 border-b border-gray-200 pb-0 flex justify-center sticky top-20 bg-gray-50/90 backdrop-blur-md z-40 py-3 transition-all overflow-x-auto no-scrollbar space-x-6 sm:space-x-10">
+            <a href="{{ url_for('shop') }}{% if sort_by and sort_by != 'default' %}?sort={{ sort_by }}{% endif %}"
+                class="font-black uppercase tracking-widest text-xs pb-3 border-b-2 transition-all whitespace-nowrap {% if not current_category %}text-black border-black{% else %}text-gray-400 border-transparent hover:text-black hover:border-gray-300{% endif %}">
                 All Products
             </a>
             {% for category in categories %}
-            <a href="{{ url_for('shop', category=category.id) }}"
-                class="stext-106 cl6 trans-04 font-black uppercase tracking-widest text-xs pb-4 border-b-2 transition-all {% if current_category == category.id %}text-black border-black{% else %}text-gray-300 border-transparent hover:text-black hover:border-black{% endif %}">
+            <a href="{{ url_for('shop', category=category.id) }}{% if sort_by and sort_by != 'default' %}&sort={{ sort_by }}{% endif %}"
+                class="font-black uppercase tracking-widest text-xs pb-3 border-b-2 transition-all whitespace-nowrap {% if current_category == category.id %}text-black border-black{% else %}text-gray-400 border-transparent hover:text-black hover:border-gray-300{% endif %}">
                 {{ category.name }}
             </a>
             {% endfor %}
         </div>
 
-        <div class="flex-w flex-sb-m p-b-52 mb-12 flex justify-end items-center px-4">
-            <div class="flex-w flex-c-m m-tb-10 border-2 border-gray-200 bg-white px-8 py-3 rounded-2xl cursor-pointer hover:border-black hover:bg-black hover:text-white transition-all transform hover:scale-105 shadow-sm group"
-                onclick="toggleFilter()">
-                <div
-                    class="flex-c-m stext-106 cl6 size-104 pointer hov-btn3 trans-04 font-black uppercase tracking-widest text-xs">
-                    <i class="fas fa-filter mr-3 group-hover:rotate-180 transition-transform duration-500"></i>
-                    Refine Results
-                </div>
+        <!-- Top Controls Bar: Counter, Active Filters & Refine Toggle -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
+            <div class="flex flex-wrap items-center gap-3">
+                <span class="text-xs font-black text-gray-700 uppercase tracking-wider">
+                    Showing <span class="text-black font-black">{{ products|length }}</span> of {{ total_count }} products
+                </span>
+
+                <!-- Active Filter Badges -->
+                {% if current_category %}
+                {% for category in categories %}
+                    {% if category.id == current_category %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-800">
+                        Category: {{ category.name }}
+                        <a href="{{ url_for('shop') }}" class="ml-2 text-gray-400 hover:text-red-500"><i class="fas fa-times"></i></a>
+                    </span>
+                    {% endif %}
+                {% endfor %}
+                {% endif %}
+
+                {% if min_price or max_price %}
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-800">
+                    Price: ${{ min_price if min_price else '0' }} - ${{ max_price if max_price else 'Any' }}
+                    <a href="{{ url_for('shop', category=current_category if current_category else None) }}" class="ml-2 text-gray-400 hover:text-red-500"><i class="fas fa-times"></i></a>
+                </span>
+                {% endif %}
+
+                {% if current_category or min_price or max_price or (sort_by and sort_by != 'default') %}
+                <a href="{{ url_for('shop') }}" class="text-xs font-bold text-red-500 hover:underline">
+                    Clear All
+                </a>
+                {% endif %}
             </div>
+
+            <!-- Toggle Filter Panel Button -->
+            <button type="button" 
+                onclick="toggleFilter()"
+                class="inline-flex items-center justify-center space-x-2 px-5 py-2.5 bg-black text-white hover:bg-[var(--dynamic-color)] rounded-xl text-xs font-black uppercase tracking-wider transition-all transform hover:scale-105 cursor-pointer shadow-md">
+                <i class="fas fa-sliders-h text-xs"></i>
+                <span>Filter & Sort</span>
+            </button>
         </div>
 
-        <!-- Filter Panel -->
+        <!-- Collapsible Filter Panel -->
         <div id="filter-panel"
-            class="hidden bg-white p-12 rounded-[3rem] mb-16 shadow-2xl shadow-gray-200/50 animate-fade-in-up border border-gray-50">
-            <form action="{{ url_for('shop') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-12">
+            class="hidden bg-white p-8 sm:p-10 rounded-3xl mb-12 shadow-xl border border-gray-100 animate-fade-in-up">
+            <form action="{{ url_for('shop') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
+                {% if current_category %}
+                <input type="hidden" name="category" value="{{ current_category }}">
+                {% endif %}
+
                 <div>
-                    <h4 class="stext-102 cl2 p-b-15 font-black uppercase tracking-widest text-xs mb-6 text-gray-400">
-                        Sort Selection</h4>
+                    <label class="block font-black uppercase tracking-widest text-[10px] text-gray-400 mb-3">
+                        Sort By
+                    </label>
                     <select name="sort"
-                        class="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--dynamic-color)] rounded-2xl px-6 py-4 text-sm font-bold transition-all outline-none">
-                        <option value="">Standard Order</option>
-                        <option value="price_asc" {% if sort_by=='price_asc' %}selected{% endif %}>Price: Low to High
-                        </option>
-                        <option value="price_desc" {% if sort_by=='price_desc' %}selected{% endif %}>Price: High to Low
-                        </option>
-                        <option value="newest" {% if sort_by=='newest' %}selected{% endif %}>Newest Arrival</option>
+                        class="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--dynamic-color)] focus:bg-white rounded-2xl px-5 py-3.5 text-xs font-bold transition-all outline-none text-gray-800">
+                        <option value="default">Default Sorting</option>
+                        <option value="price_asc" {% if sort_by=='price_asc' or sort_by=='price_low' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="price_desc" {% if sort_by=='price_desc' or sort_by=='price_high' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="newest" {% if sort_by=='newest' %}selected{% endif %}>Newest Releases</option>
                     </select>
                 </div>
 
                 <div>
-                    <h4 class="stext-102 cl2 p-b-15 font-black uppercase tracking-widest text-xs mb-6 text-gray-400">
-                        Price Threshold</h4>
-                    <div class="flex items-center space-x-4">
+                    <label class="block font-black uppercase tracking-widest text-[10px] text-gray-400 mb-3">
+                        Price Range ($)
+                    </label>
+                    <div class="flex items-center space-x-3">
                         <div class="relative flex-1">
-                            <span class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs">$</span>
                             <input type="number" name="min_price" placeholder="Min"
                                 value="{{ min_price if min_price is not none }}"
-                                class="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--dynamic-color)] rounded-2xl pl-10 pr-6 py-4 text-sm font-bold transition-all outline-none">
+                                class="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--dynamic-color)] focus:bg-white rounded-2xl pl-8 pr-4 py-3.5 text-xs font-bold transition-all outline-none">
                         </div>
-                        <span class="text-gray-300 font-black">/</span>
+                        <span class="text-gray-300 font-black">-</span>
                         <div class="relative flex-1">
-                            <span class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs">$</span>
                             <input type="number" name="max_price" placeholder="Max"
                                 value="{{ max_price if max_price is not none }}"
-                                class="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--dynamic-color)] rounded-2xl pl-10 pr-6 py-4 text-sm font-bold transition-all outline-none">
+                                class="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--dynamic-color)] focus:bg-white rounded-2xl pl-8 pr-4 py-3.5 text-xs font-bold transition-all outline-none">
                         </div>
                     </div>
                 </div>
 
-                <div class="flex items-end">
+                <div class="flex space-x-3">
                     <button type="submit"
-                        class="w-full bg-black text-white py-5 rounded-2xl font-black tracking-widest hover:bg-[var(--dynamic-color)] transition-all transform hover:scale-105 shadow-xl hover:shadow-[var(--dynamic-color)]/20 uppercase">
-                        Update Gallery
+                        class="flex-1 bg-black text-white py-3.5 rounded-2xl font-black text-xs tracking-widest hover:bg-[var(--dynamic-color)] transition-all transform hover:scale-102 shadow-lg uppercase cursor-pointer">
+                        Apply Filters
                     </button>
+                    <a href="{{ url_for('shop') }}" class="px-5 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center transition-colors">
+                        Reset
+                    </a>
                 </div>
-
-                {% if current_category %}
-                <input type="hidden" name="category" value="{{ current_category }}">
-                {% endif %}
             </form>
         </div>
 
         <!-- Product Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+        {% if products and products|length > 0 %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
             {% for product in products %}
-            <div class="group h-full flex flex-col animate-fade-in-up"
-                style="animation-delay: {{ loop.index0 * 0.05 }}s;">
-                <div
-                    class="relative overflow-hidden bg-white h-[400px] rounded-3xl group-hover:shadow-2xl transition-all duration-500 border border-transparent group-hover:border-gray-100">
+            <div class="group h-full flex flex-col bg-white p-4 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 animate-fade-in-up"
+                style="animation-delay: {{ loop.index0 * 0.04 }}s;">
+                <!-- Product Image Container with Zoom -->
+                <div class="relative overflow-hidden bg-gray-50 h-80 rounded-2xl">
                     <img src="{{ product.image_url }}" alt="{{ product.name }}"
-                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                    <div
-                        class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/20 backdrop-blur-[2px]">
+                        class="w-full h-full object-cover transform duration-700 ease-out group-hover:scale-110 will-change-transform">
+                    
+                    <!-- Quick View Overlay -->
+                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/25 backdrop-blur-[2px]">
                         <a href="{{ url_for('product', id=product.id) }}"
-                            class="flex-c-m stext-103 cl2 size-102 bg-white text-gray-900 px-8 py-3 rounded-full font-black shadow-2xl hover:bg-[var(--dynamic-color)] hover:text-white transition-all transform hover:scale-110">
-                            QUICK VIEW
+                            class="bg-white text-gray-900 px-6 py-2.5 rounded-full font-black text-xs shadow-2xl hover:bg-[var(--dynamic-color)] hover:text-white transition-all transform hover:scale-105 uppercase tracking-wider">
+                            Quick View
                         </a>
                     </div>
+
+                    <!-- Quick Add Button -->
+                    <button type="button" 
+                        onclick="addToCart({{ product.id }})" 
+                        title="Add to cart"
+                        class="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm text-gray-900 shadow-md flex items-center justify-center hover:bg-[var(--dynamic-color)] hover:text-white transition-all transform group-hover:scale-105 cursor-pointer">
+                        <i class="fas fa-plus text-xs"></i>
+                    </button>
                 </div>
 
-                <div class="p-t-14 mt-6 flex justify-between items-start px-2">
+                <div class="pt-4 flex justify-between items-start px-1 flex-1 flex-col justify-between">
                     <div>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-1">
+                            {{ product.category.name if product.category else 'Velora' }}
+                        </span>
                         <a href="{{ url_for('product', id=product.id) }}"
-                            class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6 block text-lg font-bold hover:text-[var(--dynamic-color)] transition-colors">
+                            class="block text-base font-bold text-gray-900 hover:text-[var(--dynamic-color)] transition-colors line-clamp-1">
                             {{ product.name }}
                         </a>
-                        <span class="stext-105 cl3 block text-gray-400 font-medium mt-1">
+                    </div>
+                    <div class="w-full flex justify-between items-center mt-3 pt-3 border-t border-gray-50">
+                        <span class="text-base font-black text-gray-900">
                             ${{ "%.2f"|format(product.price) }}
                         </span>
-                    </div>
-                    <div class="block2-txt-child2 flex-r p-t-3">
                         <a href="{{ url_for('add_to_wishlist', id=product.id) }}"
-                            class="btn-addwish-b2 dis-block pos-relative js-addwish-b2 text-2xl transition-colors {% if product.id in wishlist_items %}text-[var(--dynamic-color)]{% else %}text-gray-200 hover:text-[var(--dynamic-color)]{% endif %}">
+                            title="Add to wishlist"
+                            class="text-xl transition-colors {% if product.id in wishlist_items %}text-[var(--dynamic-color)]{% else %}text-gray-300 hover:text-[var(--dynamic-color)]{% endif %}">
                             <i class="{% if product.id in wishlist_items %}fas{% else %}far{% endif %} fa-heart"></i>
                         </a>
                     </div>
@@ -124,13 +172,30 @@
             </div>
             {% endfor %}
         </div>
+        {% else %}
+        <!-- No Products Found State -->
+        <div class="bg-white rounded-3xl p-16 text-center shadow-sm border border-gray-100 max-w-2xl mx-auto my-8">
+            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                <i class="fas fa-search text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-black text-gray-900 uppercase tracking-tight mb-2">No matching products found</h3>
+            <p class="text-gray-500 font-medium text-xs max-w-md mx-auto mb-6">
+                Try adjusting your price range, choosing another category, or reset the filters.
+            </p>
+            <a href="{{ url_for('shop') }}" class="inline-flex items-center px-6 py-3 bg-black text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-[var(--dynamic-color)] transition-all">
+                Reset All Filters
+            </a>
+        </div>
+        {% endif %}
     </div>
 </div>
 
 <script>
     function toggleFilter() {
         const panel = document.getElementById('filter-panel');
-        panel.classList.toggle('hidden');
+        if (panel) {
+            panel.classList.toggle('hidden');
+        }
     }
 </script>
 {% endblock %}

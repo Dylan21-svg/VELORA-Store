@@ -50,15 +50,23 @@ function updateWishlistCount() {
 }
 
 function addToCart(productId, quantity = 1) {
-    // Determine the method based on the route requirement (POST)
+    const formData = new URLSearchParams();
+    formData.append('quantity', quantity);
+    formData.append('ajax', '1');
+
     fetch(`/add_to_cart/${productId}`, {
-        method: 'POST'
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formData.toString()
     })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 updateCartCount();
-                showNotification('Added to cart!');
+                showNotification(`Added ${quantity > 1 ? quantity + ' items' : 'item'} to your bag!`);
             } else {
                 showNotification(data.message || 'Error adding to cart', 'error');
             }
@@ -70,13 +78,43 @@ function addToCart(productId, quantity = 1) {
 }
 
 function showNotification(message, type = 'success') {
-    // Simple alert for now, can be improved to a toast
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'fixed bottom-6 right-6 z-[9999] flex flex-col space-y-3 pointer-events-none';
+        document.body.appendChild(container);
+    }
+
     const toast = document.createElement('div');
-    toast.className = `fixed bottom-8 right-8 px-6 py-3 rounded-xl shadow-2xl z-[2000] text-sm font-bold animate-fade-in-up ${type === 'success' ? 'bg-black text-white' : 'bg-red-600 text-white'}`;
-    toast.style.backgroundColor = type === 'success' ? 'var(--dynamic-color)' : '#dc2626';
-    toast.innerText = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+    toast.className = `pointer-events-auto flex items-center space-x-3 px-5 py-3.5 rounded-2xl shadow-2xl text-xs font-black uppercase tracking-wider text-white transform translate-y-4 opacity-0 transition-all duration-300 ${type === 'success' ? 'bg-black' : 'bg-red-600'}`;
+    if (type === 'success') {
+        toast.style.background = 'linear-gradient(135deg, #111827, #000000)';
+        toast.style.border = '1px solid rgba(255,255,255,0.15)';
+    }
+
+    const icon = document.createElement('i');
+    icon.className = type === 'success' ? 'fas fa-check-circle text-green-400 text-sm' : 'fas fa-exclamation-circle text-white text-sm';
+    toast.appendChild(icon);
+
+    const span = document.createElement('span');
+    span.innerText = message;
+    toast.appendChild(span);
+
+    container.appendChild(toast);
+
+    // Animate in
+    requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-4', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+    });
+
+    // Auto dismiss
+    setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-4', 'opacity-0');
+        setTimeout(() => toast.remove(), 350);
+    }, 3200);
 }
 
 // Search Modal

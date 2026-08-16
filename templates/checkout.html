@@ -1,98 +1,167 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="py-16 bg-white">
-    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-4xl font-bold text-center mb-12">Checkout</h1>
+<section class="py-12 md:py-20 bg-gray-50/50 min-h-screen">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Breadcrumb / Header -->
+        <div class="mb-10 pb-6 border-b border-gray-200">
+            <span class="text-xs font-black uppercase tracking-[0.25em] text-[var(--dynamic-color)]">Velora Checkout</span>
+            <h1 class="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight mt-1">Secure Checkout</h1>
+        </div>
 
-        <form action="{{ url_for('checkout') }}" method="post" class="space-y-6">
-            <div>
-                <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
-                <input type="text" id="name" name="name" required
-                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary">
-            </div>
-            <div>
-                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                <input type="email" id="email" name="email" required
-                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary">
-            </div>
-            <div>
-                <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
-                <textarea id="address" name="address" rows="3" required
-                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"></textarea>
-            </div>
-            <!-- Payment Method Selection -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
-                <div class="space-y-2">
-                    <label class="flex items-center space-x-3 p-3 border rounded-md cursor-pointer hover:bg-gray-50">
-                        <input type="radio" name="payment_method" value="paypal"
-                            class="focus:ring-primary h-4 w-4 text-primary border-gray-300" checked
-                            onchange="togglePhoneInput()">
-                        <span class="text-gray-900 font-medium">PayPal</span>
-                        <i class="fab fa-paypal text-blue-600 text-xl ml-auto"></i>
-                    </label>
-                    <label class="flex items-center space-x-3 p-3 border rounded-md cursor-pointer hover:bg-gray-50">
-                        <input type="radio" name="payment_method" value="mtn"
-                            class="focus:ring-primary h-4 w-4 text-primary border-gray-300"
-                            onchange="togglePhoneInput()">
-                        <span class="text-gray-900 font-medium">MTN Mobile Money</span>
-                        <span class="ml-auto font-bold text-yellow-500">MoMo</span>
-                    </label>
-                    <label class="flex items-center space-x-3 p-3 border rounded-md cursor-pointer hover:bg-gray-50">
-                        <input type="radio" name="payment_method" value="orange"
-                            class="focus:ring-primary h-4 w-4 text-primary border-gray-300"
-                            onchange="togglePhoneInput()">
-                        <span class="text-gray-900 font-medium">Orange Money</span>
-                        <span class="ml-auto font-bold text-orange-500">OM</span>
-                    </label>
+        <form action="{{ url_for('checkout') }}" method="POST" class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+            <!-- Left Column: Shipping & Payment -->
+            <div class="lg:col-span-7 space-y-8">
+                <!-- Contact & Shipping Details -->
+                <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100">
+                    <h2 class="text-xl font-black text-gray-900 uppercase tracking-tight mb-6 flex items-center">
+                        <span class="w-8 h-8 rounded-full bg-black text-white text-xs flex items-center justify-center mr-3">1</span>
+                        Shipping Information
+                    </h2>
+
+                    <div class="space-y-5">
+                        <div>
+                            <label for="name" class="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">Full Name</label>
+                            <input type="text" id="name" name="name" required placeholder="Jane Doe"
+                                class="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--dynamic-color)] focus:bg-white rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-900 transition-all outline-none">
+                        </div>
+
+                        <div>
+                            <label for="email" class="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">Email Address</label>
+                            <input type="email" id="email" name="email" required placeholder="jane.doe@example.com"
+                                class="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--dynamic-color)] focus:bg-white rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-900 transition-all outline-none">
+                        </div>
+
+                        <div>
+                            <label for="address" class="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">Shipping Street Address</label>
+                            <textarea id="address" name="address" rows="3" required placeholder="123 Luxury Ave, Apt 4B, City, Country"
+                                class="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--dynamic-color)] focus:bg-white rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-900 transition-all outline-none"></textarea>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Conditional Phone Input -->
-            <div id="phone-container" class="hidden">
-                <label for="phone_number" class="block text-sm font-medium text-gray-700">Phone Number (Required for
-                    Mobile Money)</label>
-                <input type="tel" id="phone_number" name="phone_number" placeholder="e.g., 670000000"
-                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary">
-            </div>
+                <!-- Payment Selection -->
+                <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100">
+                    <h2 class="text-xl font-black text-gray-900 uppercase tracking-tight mb-6 flex items-center">
+                        <span class="w-8 h-8 rounded-full bg-black text-white text-xs flex items-center justify-center mr-3">2</span>
+                        Payment Method
+                    </h2>
 
-            <script>
-                function togglePhoneInput() {
-                    const method = document.querySelector('input[name="payment_method"]:checked').value;
-                    const phoneContainer = document.getElementById('phone-container');
-                    const phoneInput = document.getElementById('phone_number');
+                    <div class="space-y-3">
+                        <label class="flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer hover:bg-gray-50/80 transition-all group has-[:checked]:border-black has-[:checked]:bg-gray-50/50">
+                            <div class="flex items-center space-x-3.5">
+                                <input type="radio" name="payment_method" value="paypal" class="h-4 w-4 text-black focus:ring-0" checked onchange="togglePhoneInput()">
+                                <span class="text-sm font-black text-gray-900">PayPal / Credit Card</span>
+                            </div>
+                            <i class="fab fa-paypal text-blue-600 text-2xl"></i>
+                        </label>
 
-                    if (method === 'mtn' || method === 'orange') {
-                        phoneContainer.classList.remove('hidden');
-                        phoneInput.setAttribute('required', 'required');
-                    } else {
-                        phoneContainer.classList.add('hidden');
-                        phoneInput.removeAttribute('required');
-                    }
-                }
-            </script>
+                        <label class="flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer hover:bg-gray-50/80 transition-all group has-[:checked]:border-black has-[:checked]:bg-gray-50/50">
+                            <div class="flex items-center space-x-3.5">
+                                <input type="radio" name="payment_method" value="mtn" class="h-4 w-4 text-black focus:ring-0" onchange="togglePhoneInput()">
+                                <span class="text-sm font-black text-gray-900">MTN Mobile Money</span>
+                            </div>
+                            <span class="font-black px-2.5 py-1 bg-yellow-400 text-black text-xs rounded-lg uppercase tracking-wider">MoMo</span>
+                        </label>
 
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold mb-4">Order Summary</h3>
-                {% for item in products %}
-                <div class="flex justify-between mb-2">
-                    <span>{{ item.product.name }} x{{ item.quantity }}</span>
-                    <span>${{ "%.2f"|format(item.product.price * item.quantity) }}</span>
-                </div>
-                {% endfor %}
-                <div class="border-t pt-2 mt-2">
-                    <div class="flex justify-between font-bold">
-                        <span>Total</span>
-                        <span>${{ "%.2f"|format(total) }}</span>
+                        <label class="flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer hover:bg-gray-50/80 transition-all group has-[:checked]:border-black has-[:checked]:bg-gray-50/50">
+                            <div class="flex items-center space-x-3.5">
+                                <input type="radio" name="payment_method" value="orange" class="h-4 w-4 text-black focus:ring-0" onchange="togglePhoneInput()">
+                                <span class="text-sm font-black text-gray-900">Orange Money</span>
+                            </div>
+                            <span class="font-black px-2.5 py-1 bg-orange-500 text-white text-xs rounded-lg uppercase tracking-wider">OM</span>
+                        </label>
+                    </div>
+
+                    <!-- Conditional Phone for MoMo/OM -->
+                    <div id="phone-container" class="hidden mt-6 pt-6 border-t border-gray-100 animate-fade-in-up">
+                        <label for="phone_number" class="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">
+                            Mobile Money Phone Number <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <span class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 font-bold"><i class="fas fa-phone-alt"></i></span>
+                            <input type="tel" id="phone_number" name="phone" placeholder="e.g. +237 670 000 000"
+                                class="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--dynamic-color)] focus:bg-white rounded-2xl pl-12 pr-5 py-3.5 text-sm font-bold text-gray-900 transition-all outline-none">
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <button type="submit"
-                class="w-full bg-primary text-white py-3 rounded-full hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105">Place
-                Order</button>
+            <!-- Right Column: Order Summary Sidebar -->
+            <div class="lg:col-span-5 sticky top-28 space-y-6">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+                        <h3 class="text-xl font-black text-gray-900 uppercase tracking-tight">Order Summary</h3>
+                        <a href="{{ url_for('cart') }}" class="text-xs font-bold uppercase tracking-wider text-[var(--dynamic-color)] hover:underline">Edit Bag</a>
+                    </div>
+
+                    <!-- Itemized Product List -->
+                    <div class="space-y-4 max-h-72 overflow-y-auto pr-1 divide-y divide-gray-50 mb-6">
+                        {% if cart_items %}
+                        {% for item in cart_items %}
+                        <div class="pt-4 first:pt-0 flex items-center justify-between space-x-4">
+                            <div class="flex items-center space-x-3.5">
+                                <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" class="w-14 h-14 rounded-xl object-cover border border-gray-100 flex-shrink-0">
+                                <div>
+                                    <h4 class="font-bold text-xs text-gray-900 line-clamp-1">{{ item.product.name }}</h4>
+                                    <span class="text-[11px] font-bold text-gray-400">Qty: {{ item.quantity }} × ${{ "%.2f"|format(item.product.price) }}</span>
+                                </div>
+                            </div>
+                            <span class="font-black text-sm text-gray-900">${{ "%.2f"|format(item.product.price * item.quantity) }}</span>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <!-- Totals Breakdown -->
+                    <div class="space-y-3 pt-4 border-t border-gray-100 text-sm font-medium text-gray-600">
+                        <div class="flex justify-between">
+                            <span>Subtotal</span>
+                            <span class="font-bold text-gray-900">${{ "%.2f"|format(total) }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>Shipping</span>
+                            <span class="font-black text-xs text-green-600 uppercase bg-green-50 px-2 py-0.5 rounded-full">Free Express</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Taxes</span>
+                            <span class="font-bold text-gray-900">$0.00</span>
+                        </div>
+                        <div class="border-t border-gray-100 pt-4 flex justify-between items-baseline">
+                            <span class="text-base font-black text-gray-900 uppercase tracking-wider">Total</span>
+                            <span class="text-3xl font-black text-gray-900">${{ "%.2f"|format(total) }}</span>
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                        class="mt-8 w-full bg-black text-white py-4 rounded-2xl font-black tracking-widest uppercase text-xs flex items-center justify-center space-x-3 hover:bg-[var(--dynamic-color)] transition-all transform hover:scale-[1.02] shadow-xl hover:shadow-[var(--dynamic-color)]/25 cursor-pointer">
+                        <i class="fas fa-lock text-xs"></i>
+                        <span>Complete Order (${{ "%.2f"|format(total) }})</span>
+                    </button>
+
+                    <p class="mt-4 text-center text-[10px] uppercase tracking-widest text-gray-400 font-bold">
+                        Guaranteed 256-Bit SSL Encrypted Payment
+                    </p>
+                </div>
+            </div>
         </form>
     </div>
 </section>
+
+<script>
+    function togglePhoneInput() {
+        const method = document.querySelector('input[name="payment_method"]:checked').value;
+        const phoneContainer = document.getElementById('phone-container');
+        const phoneInput = document.getElementById('phone_number');
+
+        if (method === 'mtn' || method === 'orange') {
+            phoneContainer.classList.remove('hidden');
+            phoneInput.setAttribute('required', 'required');
+            phoneInput.focus();
+        } else {
+            phoneContainer.classList.add('hidden');
+            phoneInput.removeAttribute('required');
+        }
+    }
+</script>
 {% endblock %}

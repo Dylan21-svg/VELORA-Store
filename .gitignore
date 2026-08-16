@@ -6,7 +6,6 @@ __pycache__/
 # Virtual environments
 venv/
 env/
-.venv/
 .env
 
 # Database
@@ -23,5 +22,5 @@ dist/
 build/
 *.egg-info/
 
-# Ignore velora report files (safe to delete after report)
-velora/
+node_modules/
+.cache/
