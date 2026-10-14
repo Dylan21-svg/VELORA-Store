@@ -13,10 +13,18 @@ import type { User, Product, CurrencyCode, Order } from './src/data.ts';
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
-// Ensure upload directory exists
-const uploadDir = path.join(process.cwd(), 'static', 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// Ensure upload directory exists (safe for serverless environments like Vercel where filesystem is read-only)
+const isVercel = Boolean(process.env.VERCEL);
+const uploadDir = isVercel
+  ? path.join('/tmp', 'uploads')
+  : path.join(process.cwd(), 'static', 'uploads');
+
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+} catch (err) {
+  console.warn('Notice: upload directory creation skipped or handled gracefully:', err);
 }
 
 // Multer storage for product uploads
@@ -39,6 +47,9 @@ app.use(cookieParser());
 
 // Static directory serving
 app.use('/static', express.static(path.join(process.cwd(), 'static')));
+if (isVercel) {
+  app.use('/static/uploads', express.static('/tmp/uploads'));
+}
 
 // Session configuration
 app.use(
@@ -153,7 +164,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // Configure Nunjucks
-const env = nunjucks.configure('templates', {
+const templatesDir = path.join(process.cwd(), 'templates');
+const env = nunjucks.configure(templatesDir, {
   autoescape: true,
   express: app,
   watch: false,
@@ -1534,7 +1546,11 @@ app.use((_req: Request, res: Response) => {
   res.status(404).render('404.html');
 });
 
-// Start Server
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Velora Store running on http://0.0.0.0:${PORT}`);
-});
+// Start Server (only when run directly, not when imported as a serverless handler)
+if (!process.env.VERCEL) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Velora Store running on http://0.0.0.0:${PORT}`);
+  });
+}
+
+export default app;
