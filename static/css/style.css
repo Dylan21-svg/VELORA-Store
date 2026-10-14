@@ -83,20 +83,24 @@ h6 {
 
 .menu-desktop {
     display: flex;
-    justify-content: center;
-    flex: 1;
+    align-items: center;
+    flex-shrink: 0;
 }
 
 .main-menu {
     display: flex;
-    gap: 30px;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .main-menu a {
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: 700;
     color: var(--primary-color);
-    padding: 10px 0;
+    padding: 6px 0;
+    white-space: nowrap;
 }
 
 .main-menu a:hover,
@@ -115,7 +119,8 @@ h6 {
 .wrap-icon-header {
     display: flex;
     align-items: center;
-    gap: 25px;
+    gap: 16px;
+    flex-shrink: 0;
 }
 
 .icon-header-item {

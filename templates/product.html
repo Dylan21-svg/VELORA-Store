@@ -2,259 +2,648 @@
 
 {% block content %}
 <!-- Breadcrumb -->
-<div class="container p-t-100">
-    <div class="flex-w flex-l-m p-l-24 p-r-15 p-t-10 p-lr-0-lg max-w-7xl mx-auto">
-        <a href="{{ url_for('index') }}"
-            class="stext-109 cl8 hov-cl1 trans-04 text-gray-400 text-xs font-bold uppercase tracking-widest hover:text-[var(--dynamic-color)] transition-all">
-            Home
-            <i class="fa fa-angle-right m-l-9 m-r-10 mx-3" aria-hidden="true"></i>
-        </a>
-        <a href="{{ url_for('shop') }}?category={{ product.category_id }}"
-            class="stext-109 cl8 hov-cl1 trans-04 text-gray-400 text-xs font-bold uppercase tracking-widest hover:text-[var(--dynamic-color)] transition-all">
-            {{ product.category.name }}
-            <i class="fa fa-angle-right m-l-9 m-r-10 mx-3" aria-hidden="true"></i>
-        </a>
-        <span class="stext-109 cl4 text-gray-900 text-xs font-black uppercase tracking-widest">
-            {{ product.name }}
-        </span>
+<div class="container pt-28 pb-4">
+    <div class="flex items-center space-x-2 text-xs font-bold uppercase tracking-widest text-gray-400 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <a href="{{ url_for('index') }}" class="hover:text-black transition-colors">Home</a>
+        <i class="fas fa-chevron-right text-[9px] text-gray-300"></i>
+        <a href="{{ url_for('shop') }}?category={{ product.category_id }}" class="hover:text-black transition-colors">{{ product.category.name }}</a>
+        <i class="fas fa-chevron-right text-[9px] text-gray-300"></i>
+        <span class="text-gray-900 font-black truncate max-w-xs">{{ product.name }}</span>
     </div>
 </div>
 
 <!-- Product Detail -->
-<section class="sec-product-detail bg-white p-t-40 p-b-60">
+<section class="sec-product-detail bg-white pb-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 items-start">
-            <!-- Product Gallery with Zoom -->
-            <div class="animate-fade-in-up">
-                <div class="relative group overflow-hidden rounded-[2.5rem] bg-gray-50 border border-gray-100 shadow-xl shadow-gray-200/50">
-                    <img src="{{ product.image_url }}" alt="{{ product.name }}"
-                        class="w-full h-auto object-cover transform duration-700 ease-out group-hover:scale-105 will-change-transform">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+            
+            <!-- Left: Rich Media Showcase (Gallery, 360 Spin, Zoom Loupe) -->
+            <div class="lg:col-span-7 space-y-6">
+                <!-- Media View Modes: Photos vs 360 Spin -->
+                <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                    <div class="flex space-x-4">
+                        <button type="button" onclick="switchMediaMode('photo')" id="btn-mode-photo"
+                            class="text-xs font-black uppercase tracking-widest pb-1 border-b-2 border-black text-black transition-all flex items-center space-x-1.5 cursor-pointer">
+                            <i class="fas fa-camera text-[10px]"></i>
+                            <span>Atelier Photos</span>
+                        </button>
+                        <button type="button" onclick="switchMediaMode('spin')" id="btn-mode-spin"
+                            class="text-xs font-black uppercase tracking-widest pb-1 border-b-2 border-transparent text-gray-400 hover:text-black transition-all flex items-center space-x-1.5 cursor-pointer">
+                            <i class="fas fa-sync-alt text-[10px]"></i>
+                            <span>360° Interactive Spin</span>
+                        </button>
+                    </div>
+                    <span class="text-[11px] font-bold text-gray-400 flex items-center">
+                        <i class="fas fa-search-plus mr-1 text-xs"></i> Hover image to magnify fabric
+                    </span>
                 </div>
+
+                <!-- Main Photo Viewer with Interactive Zoom Lens -->
+                <div id="media-photo-view" class="relative group">
+                    <div id="zoom-container"
+                        class="relative overflow-hidden rounded-3xl bg-gray-50 border border-gray-200/80 shadow-xl cursor-crosshair h-[560px] flex items-center justify-center">
+                        <img id="main-product-img" src="{{ product.image_url }}" alt="{{ product.name }}"
+                            class="w-full h-full object-cover transition-transform duration-200 ease-out will-change-transform">
+                        
+                        {% if product.badge %}
+                        <div class="absolute top-6 left-6 z-10">
+                            <span class="px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-black text-white border border-gray-800 shadow-xl">
+                                {{ product.badge }}
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        <!-- Zoom Loupe Hint -->
+                        <div class="absolute bottom-6 right-6 z-10 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
+                            HD Fabric Inspection
+                        </div>
+                    </div>
+
+                    <!-- Thumbnails row -->
+                    <div class="flex items-center space-x-3 mt-4 overflow-x-auto pb-2 custom-scrollbar">
+                        {% for img in product.gallery_images %}
+                        <button type="button" onclick="selectGalleryImage('{{ img }}', this)"
+                            class="gallery-thumb w-20 h-24 rounded-2xl overflow-hidden border-2 {% if loop.first %}border-black ring-2 ring-black/10{% else %}border-transparent hover:border-gray-300{% endif %} flex-shrink-0 transition-all cursor-pointer bg-gray-50">
+                            <img src="{{ img }}" alt="Thumbnail" class="w-full h-full object-cover">
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 360 Spin Interactive Viewer -->
+                <div id="media-spin-view" class="hidden relative rounded-3xl bg-gray-950 p-8 border border-gray-800 text-center shadow-2xl">
+                    <div class="relative h-[480px] flex items-center justify-center overflow-hidden">
+                        <img id="spin-frame-img" src="{{ product.spin_images[0] if product.spin_images and product.spin_images|length > 0 else product.image_url }}"
+                            alt="360 view" class="h-full object-contain mx-auto select-none pointer-events-none transition-opacity duration-150">
+                    </div>
+                    <div class="mt-6 max-w-md mx-auto">
+                        <div class="flex items-center justify-between text-xs text-gray-400 mb-2 font-bold uppercase tracking-wider">
+                            <span>Drag scrub slider to rotate 360°</span>
+                            <span id="spin-deg-text">Angle: 0°</span>
+                        </div>
+                        <input type="range" id="spin-slider" min="0" max="{{ (product.spin_images|length - 1) if product.spin_images and product.spin_images|length > 0 else 0 }}" value="0"
+                            class="w-full accent-amber-400 cursor-ew-resize h-2 bg-gray-800 rounded-lg">
+                    </div>
+                </div>
+
+                <!-- Complete-The-Look / Curated Ensemble Bundle -->
+                {% if product.complete_the_look_products and product.complete_the_look_products|length > 0 %}
+                <div class="mt-12 p-8 rounded-3xl bg-gray-50 border border-gray-200">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-amber-600 block">Atelier Styling</span>
+                            <h3 class="text-xl font-black text-gray-900 tracking-tight uppercase">Wear It With (Curated Ensemble)</h3>
+                        </div>
+                        <span class="text-xs font-bold text-gray-500">Curated by Paris Studio</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {% for match in product.complete_the_look_products %}
+                        <div class="flex items-center space-x-4 p-3 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                            <img src="{{ match.image_url }}" alt="{{ match.name }}" class="w-16 h-20 object-cover rounded-xl flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-xs font-bold text-gray-900 truncate">{{ match.name }}</h4>
+                                <p class="text-xs text-[var(--dynamic-color)] font-black mt-0.5">{{ money(match.price) }}</p>
+                                <button onclick="addToCart({{ match.id }}, 1)" class="mt-2 text-[10px] font-black uppercase tracking-wider text-black hover:text-amber-600 flex items-center space-x-1 cursor-pointer">
+                                    <span>+ Add to Ensemble</span>
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
             </div>
 
-            <!-- Product Specs -->
-            <div class="p-t-5 animate-fade-in-up" style="animation-delay: 0.15s;">
-                <span class="text-[11px] font-black text-gray-400 uppercase tracking-[0.25em] mb-2 block">
-                    {{ product.category.name }}
-                </span>
+            <!-- Right: Product Information & Purchase Suite -->
+            <div class="lg:col-span-5 space-y-6">
+                <!-- Category & SKU -->
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-black text-gray-400 uppercase tracking-[0.25em]">
+                        {{ product.category.name }}
+                    </span>
+                    <span id="variant-sku-display" class="text-[10px] font-mono text-gray-400 uppercase">
+                        SKU: {{ product.variants[0].sku if product.variants and product.variants|length > 0 else 'VEL-LUX-001' }}
+                    </span>
+                </div>
 
-                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-4 text-gray-900 tracking-tight uppercase leading-tight">
+                <h1 class="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight uppercase leading-tight">
                     {{ product.name }}
                 </h1>
 
-                <!-- Price & Rating Badge -->
-                <div class="flex items-center space-x-6 mb-6">
-                    <span class="text-3xl font-black text-[var(--dynamic-color)] transition-colors duration-500">
-                        ${{ "%.2f"|format(product.price) }}
+                <!-- Price, Currency & Ratings -->
+                <div class="flex items-baseline space-x-4">
+                    <span id="product-price-display" class="text-3xl font-black text-gray-950">
+                        {{ money(product.price) }}
                     </span>
-
-                    <div class="flex items-center space-x-1 text-yellow-400 text-xs bg-yellow-50 px-3 py-1.5 rounded-full">
+                    <div class="flex items-center space-x-1 text-amber-500 text-xs">
                         <i class="fas fa-star"></i>
-                        <span class="font-bold text-gray-800 ml-1">4.9</span>
-                        <span class="text-gray-400 font-medium text-[10px]">({{ product.reviews|length }} reviews)</span>
+                        <span class="font-black text-gray-900 ml-1">{{ avgRating }}</span>
+                        <a href="#reviews-anchor" class="text-gray-400 font-medium text-xs hover:underline">({{ reviewCount }} verified reviews)</a>
                     </div>
                 </div>
 
-                <!-- Stock Urgency Badge with Mini Progress -->
-                <div class="mb-8 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                    {% if product.stock_quantity > 0 %}
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="flex items-center space-x-2">
-                            <span class="w-2.5 h-2.5 rounded-full {% if product.stock_quantity < 5 %}bg-red-500 animate-pulse{% else %}bg-green-500{% endif %}"></span>
-                            <span class="text-xs font-black uppercase tracking-wider text-gray-700">
-                                {% if product.stock_quantity < 5 %}
-                                Only {{ product.stock_quantity }} units left in stock!
-                                {% else %}
-                                In Stock &amp; Ready to Ship
-                                {% endif %}
+                <!-- Buy Now Pay Later (Klarna / Afterpay) -->
+                <div class="p-3 rounded-2xl bg-gray-50 border border-gray-200/80 flex items-center justify-between text-xs">
+                    <div class="flex items-center space-x-2 text-gray-700">
+                        <span class="px-2 py-0.5 rounded bg-pink-100 text-pink-700 font-black text-[10px]">Klarna.</span>
+                        <span class="font-medium">Or 4 interest-free payments of <strong id="klarna-split">{{ money(product.price / 4) }}</strong></span>
+                    </div>
+                    <button type="button" onclick="showNotification('Klarna 4-payment financing available at checkout.');" class="text-gray-400 hover:text-black text-xs">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </div>
+
+                <!-- VIP Loyalty Points Badge -->
+                <div class="flex items-center space-x-2 text-xs font-bold text-gray-600 bg-amber-50/60 border border-amber-200/60 p-2.5 rounded-xl">
+                    <i class="fas fa-crown text-amber-500"></i>
+                    <span>Earn <strong class="text-amber-800">{{ vipPointsEarnable }} VIP Privilège Points</strong> upon ordering this piece.</span>
+                </div>
+
+                <!-- Pre-order or Sold-out Alert Banner -->
+                {% if product.is_preorder or product.stock_quantity == 0 %}
+                <div class="p-4 rounded-2xl bg-black text-white border border-gray-800">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="px-2 py-0.5 rounded bg-amber-400 text-black text-[10px] font-black uppercase tracking-wider">
+                                {% if product.is_preorder %}PRE-ORDER DROP{% else %}ATELIER SOLD OUT{% endif %}
                             </span>
+                            <h4 class="text-xs font-bold mt-2 text-gray-200">
+                                {% if product.is_preorder %}
+                                Scheduled dispatch: {{ product.preorder_date or 'Next Atelier Batch' }}
+                                {% else %}
+                                Limited production batch currently exhausted.
+                                {% endif %}
+                            </h4>
                         </div>
-                        <span class="text-[10px] font-bold text-gray-400 uppercase">Fast Delivery</span>
+                        <button type="button" onclick="openPreorderModal()"
+                            class="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-black text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer">
+                            Notify Me
+                        </button>
                     </div>
-                    {% if product.stock_quantity < 10 %}
-                    <div class="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
-                        <div class="bg-[var(--dynamic-color)] h-full rounded-full transition-all duration-500" style="width: {{ (product.stock_quantity / 10) * 100 }}%;"></div>
+                </div>
+                {% endif %}
+
+                <!-- VARIANT SELECTORS: Color, Size, Material -->
+                {% if product.variants and product.variants|length > 0 %}
+                <div class="space-y-5 pt-4 border-t border-gray-100">
+                    <!-- Color Swatches -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2.5">
+                            <label class="text-xs font-black uppercase tracking-wider text-gray-900">Colorway</label>
+                            <span id="selected-color-label" class="text-xs font-bold text-gray-500">{{ product.variants[0].color }}</span>
+                        </div>
+                        <div class="flex items-center space-x-3" id="color-swatches-wrap">
+                            {% for variant in product.variants %}
+                            <button type="button"
+                                onclick="selectVariantColor('{{ variant.color }}', '{{ variant.sku }}', {{ variant.price_offset }}, '{{ variant.image_url }}', this)"
+                                title="{{ variant.color }}"
+                                class="variant-color-btn relative w-9 h-9 rounded-full border-2 {% if loop.first %}border-black ring-2 ring-black/20{% else %}border-gray-200 hover:border-black{% endif %} transition-all cursor-pointer flex items-center justify-center p-0.5"
+                                data-color="{{ variant.color }}" data-sku="{{ variant.sku }}" data-offset="{{ variant.price_offset }}">
+                                <span class="w-full h-full rounded-full" style="background-color: {{ variant.color_hex }};"></span>
+                            </button>
+                            {% endfor %}
+                        </div>
                     </div>
-                    {% endif %}
-                    {% else %}
-                    <div class="flex items-center space-x-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
-                        <span class="text-xs font-black uppercase tracking-wider text-gray-400">Currently Sold Out</span>
+
+                    <!-- Size Selector & Size Guide Modal Trigger -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2.5">
+                            <label class="text-xs font-black uppercase tracking-wider text-gray-900">Select Size</label>
+                            <button type="button" onclick="openSizeGuideModal()"
+                                class="text-xs font-black uppercase tracking-wider text-[var(--dynamic-color)] hover:underline flex items-center space-x-1 cursor-pointer">
+                                <i class="fas fa-ruler-horizontal text-xs"></i>
+                                <span>Interactive Size &amp; Fit Guide</span>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-5 gap-2.5" id="size-options-wrap">
+                            {% for variant in product.variants %}
+                            <button type="button"
+                                onclick="selectVariantSize('{{ variant.size }}', '{{ variant.sku }}', {{ variant.stock }}, this)"
+                                class="variant-size-btn py-3 rounded-xl border-2 {% if loop.first %}border-black bg-black text-white font-black{% else %}border-gray-200 text-gray-800 hover:border-black font-bold{% endif %} text-xs uppercase tracking-wider transition-all cursor-pointer text-center relative"
+                                data-size="{{ variant.size }}" data-sku="{{ variant.sku }}" data-stock="{{ variant.stock }}">
+                                <span>{{ variant.size }}</span>
+                                {% if variant.stock > 0 and variant.stock < 4 %}
+                                <span class="block text-[8px] text-amber-300 font-bold uppercase mt-0.5">Low Stock</span>
+                                {% endif %}
+                            </button>
+                            {% endfor %}
+                        </div>
                     </div>
-                    {% endif %}
+
+                    <!-- Material & Craftsmanship Spec -->
+                    <div class="p-3 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-between text-xs">
+                        <span class="font-bold text-gray-500">Primary Material</span>
+                        <span class="font-black text-gray-900" id="material-spec-display">{{ product.variants[0].material }}</span>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Smart Fit Prediction Indicator -->
+                <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200">
+                    <div class="flex items-center justify-between text-xs mb-2">
+                        <span class="font-black text-gray-900 uppercase tracking-wider flex items-center">
+                            <i class="fas fa-check-circle text-emerald-500 mr-1.5"></i> Fit Prediction
+                        </span>
+                        <span class="text-gray-500 text-[11px] font-bold">Based on 140+ client fittings</span>
+                    </div>
+                    <p class="text-xs text-gray-700 font-medium mb-3">{{ product.fit_prediction }}</p>
+                    <div class="grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-gray-500">
+                        <div class="p-1.5 rounded-lg bg-white border border-gray-200">
+                            <span>Runs Small</span>
+                            <strong class="block text-gray-900 mt-0.5">{{ product.fit_breakdown.runs_small }}%</strong>
+                        </div>
+                        <div class="p-1.5 rounded-lg bg-white border-2 border-emerald-500/50 text-emerald-700">
+                            <span>True to Size</span>
+                            <strong class="block text-gray-900 mt-0.5">{{ product.fit_breakdown.true_to_size }}%</strong>
+                        </div>
+                        <div class="p-1.5 rounded-lg bg-white border border-gray-200">
+                            <span>Runs Large</span>
+                            <strong class="block text-gray-900 mt-0.5">{{ product.fit_breakdown.runs_large }}%</strong>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Quantity & Add to Cart -->
-                <div class="mb-10">
-                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
-                        {% if product.stock_quantity > 0 %}
-                        <!-- Quantity Stepper -->
-                        <div class="flex items-center justify-between bg-gray-50 rounded-2xl border-2 border-gray-200 focus-within:border-black p-1 w-full sm:w-40 h-14 transition-colors">
-                            <button type="button" class="w-12 h-full flex items-center justify-center text-gray-500 hover:text-black transition-colors" onclick="updateQty(-1)">
+                <!-- Add to Bag Suite & Quantity Stepper -->
+                <div class="pt-4 space-y-4">
+                    <div class="flex items-center space-x-4">
+                        <!-- Stepper -->
+                        <div class="flex items-center justify-between bg-gray-50 rounded-2xl border-2 border-gray-200 p-1 w-36 h-14">
+                            <button type="button" class="w-10 h-full flex items-center justify-center text-gray-500 hover:text-black transition-colors" onclick="updateQty(-1)">
                                 <i class="fas fa-minus text-xs"></i>
                             </button>
-                            <input class="w-16 text-center text-lg font-black bg-transparent border-none outline-none text-gray-900"
-                                type="number" name="num-product" value="1" min="1" max="{{ product.stock_quantity }}" id="product-qty">
-                            <button type="button" class="w-12 h-full flex items-center justify-center text-gray-500 hover:text-black transition-colors" onclick="updateQty(1)">
+                            <input class="w-12 text-center text-base font-black bg-transparent border-none outline-none text-gray-900"
+                                type="number" name="num-product" value="1" min="1" max="{{ product.stock_quantity if product.stock_quantity > 0 else 10 }}" id="product-qty">
+                            <button type="button" class="w-10 h-full flex items-center justify-center text-gray-500 hover:text-black transition-colors" onclick="updateQty(1)">
                                 <i class="fas fa-plus text-xs"></i>
                             </button>
                         </div>
 
-                        <!-- Add to Bag Button -->
-                        <button onclick="addToCartDetailed({{ product.id }})"
-                            class="flex-1 h-14 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[var(--dynamic-color)] transition-all transform hover:scale-102 shadow-xl hover:shadow-[var(--dynamic-color)]/25 flex items-center justify-center space-x-3 cursor-pointer">
+                        <!-- CTA Button -->
+                        {% if product.stock_quantity > 0 %}
+                        <button onclick="addToBagWithVariants({{ product.id }})"
+                            class="flex-1 h-14 bg-black hover:bg-amber-400 hover:text-black text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all transform hover:scale-[1.02] shadow-2xl flex items-center justify-center space-x-3 cursor-pointer">
                             <i class="fas fa-shopping-bag text-sm"></i>
                             <span>Add to Shopping Bag</span>
                         </button>
                         {% else %}
-                        <button disabled
-                            class="flex-1 h-14 bg-gray-100 text-gray-400 rounded-2xl font-black text-xs uppercase tracking-widest cursor-not-allowed">
-                            Out of Stock
+                        <button type="button" onclick="openPreorderModal()"
+                            class="flex-1 h-14 bg-amber-400 hover:bg-amber-300 text-black rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl flex items-center justify-center space-x-2 cursor-pointer">
+                            <i class="fas fa-bell text-sm"></i>
+                            <span>Reserve / Join Waitlist</span>
                         </button>
                         {% endif %}
 
-                        <!-- Wishlist Toggle -->
+                        <!-- Wishlist Heart Button -->
                         <a href="{{ url_for('add_to_wishlist', id=product.id) }}"
-                            title="Add to Wishlist"
-                            class="w-14 h-14 rounded-2xl border-2 border-gray-200 flex items-center justify-center text-xl transition-all hover:border-[var(--dynamic-color)] {% if product.id in wishlist_items %}text-[var(--dynamic-color)] border-[var(--dynamic-color)]{% else %}text-gray-400 hover:text-[var(--dynamic-color)]{% endif %}">
+                            title="Add to Wishlist & Registry"
+                            class="w-14 h-14 rounded-2xl border-2 border-gray-200 flex items-center justify-center text-xl transition-all hover:border-black {% if product.id in wishlist_items %}text-red-500 border-red-200 bg-red-50{% else %}text-gray-400 hover:text-black{% endif %}">
                             <i class="{% if product.id in wishlist_items %}fas{% else %}far{% endif %} fa-heart"></i>
                         </a>
                     </div>
                 </div>
 
-                <!-- Info Tabs: Details, Shipping, Guarantees -->
+                <!-- Tabs: Craftsmanship, White-Glove Shipping, Warehouse Inventory -->
                 <div class="border-t border-gray-100 pt-6">
                     <div class="flex space-x-8 border-b border-gray-100 mb-4" role="tablist">
                         <button type="button" onclick="switchProductTab('details')" id="tab-btn-details"
                             class="font-black text-xs uppercase tracking-widest pb-3 border-b-2 border-black text-black transition-all">
-                            Details
+                            Details &amp; Fabric
                         </button>
                         <button type="button" onclick="switchProductTab('shipping')" id="tab-btn-shipping"
                             class="font-black text-xs uppercase tracking-widest pb-3 border-b-2 border-transparent text-gray-400 hover:text-black transition-all">
-                            Shipping &amp; Returns
+                            White-Glove Courier
                         </button>
-                        <button type="button" onclick="switchProductTab('care')" id="tab-btn-care"
+                        <button type="button" onclick="switchProductTab('inventory')" id="tab-btn-inventory"
                             class="font-black text-xs uppercase tracking-widest pb-3 border-b-2 border-transparent text-gray-400 hover:text-black transition-all">
-                            Authenticity
+                            Atelier Vaults
                         </button>
                     </div>
 
                     <!-- Details Pane -->
-                    <div id="tab-pane-details" class="text-sm font-medium text-gray-600 leading-relaxed py-2">
+                    <div id="tab-pane-details" class="text-xs font-medium text-gray-600 leading-relaxed py-2">
                         <p>{{ product.description }}</p>
-                        <ul class="mt-4 space-y-2 text-xs font-bold text-gray-500">
-                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> 100% Premium Quality Verified Materials</li>
-                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Designed with modern tailored fit &amp; precision</li>
+                        <ul class="mt-4 space-y-2 font-bold text-gray-500">
+                            <li class="flex items-center"><i class="fas fa-shield-alt text-amber-500 mr-2 text-xs"></i> 100% Certified Ethical Luxury Fabric Origin</li>
+                            <li class="flex items-center"><i class="fas fa-cut text-amber-500 mr-2 text-xs"></i> Handcrafted by master artisans in Milan &amp; Paris</li>
+                            <li class="flex items-center"><i class="fas fa-certificate text-amber-500 mr-2 text-xs"></i> Individual serial certificate of authenticity included</li>
                         </ul>
                     </div>
 
                     <!-- Shipping Pane -->
-                    <div id="tab-pane-shipping" class="hidden text-sm font-medium text-gray-600 leading-relaxed py-2">
-                        <p>Enjoy free worldwide standard delivery on all orders. Express shipping arrives within 2-3 business days. 30-day hassle-free return guarantee.</p>
+                    <div id="tab-pane-shipping" class="hidden text-xs font-medium text-gray-600 leading-relaxed py-2 space-y-2">
+                        <p>Orders are dispatched from our Paris Central Atelier via <strong>FedEx Priority</strong> or <strong>DHL Express</strong> with 24-hour delivery dispatch.</p>
+                        <p>Complimentary White-Glove Courier on all orders over $150. Includes cedar hanger and velvet travel dust garment bag.</p>
+                        <p>30-day effortless return guarantee with prepaid airway bills.</p>
                     </div>
 
-                    <!-- Care Pane -->
-                    <div id="tab-pane-care" class="hidden text-sm font-medium text-gray-600 leading-relaxed py-2">
-                        <p>Every piece in our Velora collection is 100% authentic, curated with ethical craftsmanship and inspected before dispatch.</p>
+                    <!-- Inventory Pane (Multi-Warehouse Transparency) -->
+                    <div id="tab-pane-inventory" class="hidden text-xs py-2 space-y-2">
+                        <p class="text-gray-500 font-bold mb-3">Live Stock Across Atelier Vaults:</p>
+                        <div class="space-y-2">
+                            {% for wh in product.warehouses %}
+                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-gray-50 border border-gray-100 font-bold">
+                                <span class="flex items-center space-x-2">
+                                    <span class="w-2 h-2 rounded-full {% if wh.stock > 0 %}bg-green-500{% else %}bg-gray-300{% endif %}"></span>
+                                    <span class="text-gray-900">{{ wh.warehouse }}</span>
+                                </span>
+                                <span class="text-gray-600">{{ wh.stock }} units available</span>
+                            </div>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
 
-        <!-- Review Section -->
-        <div class="mt-24 bg-gray-50/80 rounded-[3rem] p-8 sm:p-14 border border-gray-100">
+        <!-- ==================================================== -->
+        <!-- REVIEWS & VERIFIED CUSTOMER UGC SHOWCASE -->
+        <!-- ==================================================== -->
+        <div id="reviews-anchor" class="mt-24 bg-gray-50/90 rounded-[3rem] p-8 sm:p-14 border border-gray-200/80">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-12 pb-6 border-b border-gray-200 gap-4">
                 <div>
-                    <span class="text-xs font-black uppercase tracking-widest text-[var(--dynamic-color)]">Customer Feedback</span>
-                    <h3 class="text-3xl font-black tracking-tight text-gray-900 uppercase">Reviews &amp; Ratings</h3>
+                    <span class="text-xs font-black uppercase tracking-widest text-amber-600">Client Feedback</span>
+                    <h3 class="text-3xl font-black tracking-tight text-gray-900 uppercase">Verified Reviews &amp; Client Fit</h3>
                 </div>
-                <span class="text-xs font-black text-gray-500 uppercase tracking-widest bg-white px-4 py-2 rounded-full border border-gray-200">
-                    {{ product.reviews|length }} Verified Reviews
-                </span>
+                <div class="flex items-center space-x-3">
+                    <span class="text-xs font-black text-gray-700 uppercase tracking-widest bg-white px-4 py-2 rounded-full border border-gray-200">
+                        {{ reviewCount }} Verified Purchases
+                    </span>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                <!-- Reviews List -->
-                <div class="lg:col-span-2 space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                <!-- Left: Reviews List & UGC Gallery -->
+                <div class="lg:col-span-8 space-y-6">
                     {% if product.reviews and product.reviews|length > 0 %}
                     {% for review in product.reviews %}
-                    <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 flex space-x-6 animate-fade-in-up">
-                        <div class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-[var(--dynamic-color)] font-black text-xl flex-shrink-0">
-                            {{ review.user.username[0].upper() if review.user and review.user.username else 'U' }}
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between items-center mb-2">
-                                <h5 class="text-base font-black text-gray-900">{{ review.user.username if review.user else 'Verified Customer' }}</h5>
-                                <div class="flex space-x-1 text-yellow-400">
-                                    {% for i in range(review.rating) %}
-                                    <i class="fas fa-star text-xs"></i>
-                                    {% endfor %}
+                    <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 space-y-4">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-2xl bg-black text-amber-400 flex items-center justify-center font-black text-sm flex-shrink-0">
+                                    {{ review.user.username[0].upper() if review.user and review.user.username else 'C' }}
+                                </div>
+                                <div>
+                                    <div class="flex items-center space-x-2">
+                                        <h5 class="text-sm font-black text-gray-900">{{ review.user.username if review.user else 'Verified Client' }}</h5>
+                                        {% if review.verified_buyer %}
+                                        <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-wider flex items-center">
+                                            <i class="fas fa-check-circle mr-1 text-[8px]"></i> Verified Buyer
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                    <!-- Customer Fit Tags (Height, Weight, Purchased Size) -->
+                                    <div class="flex flex-wrap items-center gap-2 mt-1 text-[11px] text-gray-500 font-medium">
+                                        {% if review.purchased_size %}
+                                        <span class="bg-gray-100 px-2 py-0.5 rounded text-gray-700 font-bold">Size: {{ review.purchased_size }}</span>
+                                        {% endif %}
+                                        {% if review.customer_height %}
+                                        <span>Height: {{ review.customer_height }}</span>
+                                        {% endif %}
+                                        {% if review.customer_weight %}
+                                        <span>· Weight: {{ review.customer_weight }}</span>
+                                        {% endif %}
+                                        {% if review.fit_rating %}
+                                        <span class="text-amber-700 font-bold">· Fit: {{ review.fit_rating }}</span>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
-                            <p class="text-gray-600 font-medium text-sm leading-relaxed italic">"{{ review.comment }}"</p>
-                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-4">
+                            <!-- Star rating -->
+                            <div class="flex space-x-1 text-amber-400 text-xs">
+                                {% for i in range(review.rating) %}
+                                <i class="fas fa-star"></i>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <p class="text-gray-700 text-xs sm:text-sm leading-relaxed font-medium">
+                            "{{ review.comment }}"
+                        </p>
+
+                        <!-- Review Photos (UGC) -->
+                        {% if review.photos and review.photos|length > 0 %}
+                        <div class="flex space-x-3 pt-2">
+                            {% for photo in review.photos %}
+                            <img src="{{ photo }}" alt="Client photo" class="w-16 h-20 object-cover rounded-xl border border-gray-200">
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="flex items-center justify-between pt-3 border-t border-gray-100 text-xs text-gray-400">
+                            <span class="text-[10px] uppercase font-bold tracking-wider">
                                 {{ review.created_at.strftime('%d %B %Y') if review.created_at.strftime else review.created_at }}
-                            </p>
+                            </span>
+                            <button type="button" onclick="voteReviewHelpful({{ review.id }}, this)"
+                                class="flex items-center space-x-1.5 text-gray-500 hover:text-black font-bold text-[11px] cursor-pointer">
+                                <i class="far fa-thumbs-up"></i>
+                                <span>Helpful (<span class="helpful-count">{{ review.helpful_count or 0 }}</span>)</span>
+                            </button>
                         </div>
                     </div>
                     {% endfor %}
                     {% else %}
                     <div class="py-16 text-center bg-white rounded-3xl border border-gray-200/80">
                         <i class="far fa-comment-dots text-4xl text-gray-300 mb-3"></i>
-                        <p class="text-gray-500 font-bold uppercase tracking-widest text-xs">No reviews for this product yet.</p>
+                        <p class="text-gray-500 font-bold uppercase tracking-widest text-xs">No reviews for this piece yet.</p>
                         <p class="text-gray-400 text-xs mt-1">Be the first to share your thoughts!</p>
                     </div>
                     {% endif %}
                 </div>
 
-                <!-- Review Form -->
-                <div>
-                    {% if current_user.is_authenticated %}
-                    <div class="bg-black p-8 rounded-3xl shadow-xl text-white sticky top-28">
-                        <h4 class="text-xl font-black mb-6 tracking-tight uppercase">Write a Review</h4>
-                        <form action="{{ url_for('add_review', id=product.id) }}" method="POST" class="space-y-6">
+                <!-- Right: Submit Review Form with Fit & Specs -->
+                <div class="lg:col-span-4">
+                    <div class="bg-black p-8 rounded-3xl shadow-2xl text-white sticky top-28 border border-gray-800">
+                        <h4 class="text-base font-black mb-4 tracking-tight uppercase">Write a Verified Review</h4>
+                        <p class="text-xs text-gray-400 mb-6">Share your fit experience with the Velora community.</p>
+
+                        <form action="{{ url_for('add_review', id=product.id) }}" method="POST" class="space-y-4">
                             <div>
-                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block">Rating</label>
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Rating</label>
                                 <div class="flex space-x-3">
                                     {% for i in range(1, 6) %}
                                     <label class="cursor-pointer">
                                         <input type="radio" name="rating" value="{{ i }}" class="hidden peer" {% if i == 5 %}checked{% endif %} required>
-                                        <i class="fas fa-star text-2xl text-gray-600 peer-checked:text-yellow-400 transition-colors"></i>
+                                        <i class="fas fa-star text-xl text-gray-600 peer-checked:text-amber-400 transition-colors"></i>
                                     </label>
                                     {% endfor %}
                                 </div>
                             </div>
+
                             <div>
-                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Comment</label>
-                                <textarea name="comment" required placeholder="What did you love about this item?"
-                                    class="w-full bg-gray-900 border border-gray-800 focus:border-[var(--dynamic-color)] rounded-2xl p-4 text-xs font-bold min-h-[120px] outline-none transition-all placeholder:text-gray-600 text-white"></textarea>
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">Fit Accuracy</label>
+                                <select name="fit_rating" class="w-full bg-gray-900 border border-gray-800 text-white rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-amber-400">
+                                    <option value="True to size" selected>True to size</option>
+                                    <option value="Runs Small">Runs slightly small (recommend sizing up)</option>
+                                    <option value="Runs Large">Runs slightly large</option>
+                                </select>
                             </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">Your Height</label>
+                                    <input type="text" name="customer_height" placeholder="e.g. 5'8\" (173cm)"
+                                        class="w-full bg-gray-900 border border-gray-800 text-white rounded-xl px-3 py-2 text-xs outline-none focus:border-amber-400">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">Your Weight</label>
+                                    <input type="text" name="customer_weight" placeholder="e.g. 130 lbs (59kg)"
+                                        class="w-full bg-gray-900 border border-gray-800 text-white rounded-xl px-3 py-2 text-xs outline-none focus:border-amber-400">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">Purchased Size</label>
+                                <input type="text" name="purchased_size" placeholder="e.g. Size M · Noir"
+                                    class="w-full bg-gray-900 border border-gray-800 text-white rounded-xl px-3 py-2 text-xs outline-none focus:border-amber-400">
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">Review Notes</label>
+                                <textarea name="comment" required placeholder="Describe fabric texture, drape, and styling occasion..."
+                                    class="w-full bg-gray-900 border border-gray-800 focus:border-amber-400 rounded-xl p-3 text-xs min-h-[90px] outline-none text-white placeholder-gray-600"></textarea>
+                            </div>
+
                             <button type="submit"
-                                class="w-full py-4 bg-[var(--dynamic-color)] text-white rounded-xl font-black tracking-widest hover:brightness-110 transition-all uppercase text-xs cursor-pointer shadow-lg">
-                                Submit Feedback
+                                class="w-full py-3.5 bg-amber-400 hover:bg-amber-300 text-black rounded-xl font-black tracking-widest uppercase text-xs cursor-pointer shadow-xl transition-all">
+                                Publish Review
                             </button>
                         </form>
                     </div>
-                    {% else %}
-                    <div class="bg-white p-8 rounded-3xl border border-gray-200 text-center sticky top-28">
-                        <div class="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-gray-400">
-                            <i class="fas fa-lock"></i>
-                        </div>
-                        <h4 class="text-base font-black text-gray-900 uppercase mb-2">Member Reviews</h4>
-                        <p class="text-gray-500 font-medium text-xs mb-6">Sign in to share your verified review and rating with our community.</p>
-                        <a href="{{ url_for('login') }}"
-                            class="inline-block px-8 py-3 bg-black text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-[var(--dynamic-color)] transition-all">
-                            Sign In
-                        </a>
-                    </div>
-                    {% endif %}
                 </div>
             </div>
         </div>
+
     </div>
 </section>
 
+<!-- ==================================================== -->
+<!-- SMART SIZE & FIT RECOMMENDER MODAL -->
+<!-- ==================================================== -->
+<div id="size-guide-modal"
+    class="fixed inset-0 z-[3000] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white text-gray-900 rounded-3xl max-w-2xl w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <button type="button" onclick="closeSizeGuideModal()" aria-label="Close Guide"
+            class="absolute top-6 right-6 text-gray-400 hover:text-black text-lg p-2 cursor-pointer">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <div class="flex items-center space-x-2 text-[10px] font-black uppercase tracking-widest text-amber-600 mb-1">
+            <i class="fas fa-ruler-combined"></i>
+            <span>Atelier Tailoring Guide</span>
+        </div>
+        <h3 class="text-2xl font-black uppercase tracking-tight text-gray-900 mb-2">Size &amp; Fit Recommendations</h3>
+        <p class="text-xs text-gray-500 mb-6">Designed with precision Parisian proportions. Compare measurements below.</p>
+
+        <!-- Unit Converter Toggle -->
+        <div class="flex items-center justify-between mb-4 bg-gray-50 p-2.5 rounded-2xl border border-gray-100">
+            <span class="text-xs font-bold text-gray-700">Display Units</span>
+            <div class="flex items-center space-x-2">
+                <button type="button" onclick="toggleSizeUnits('cm')" id="unit-btn-cm"
+                    class="px-3 py-1 rounded-xl bg-black text-white text-xs font-black uppercase tracking-wider transition-all">Centimeters (CM)</button>
+                <button type="button" onclick="toggleSizeUnits('in')" id="unit-btn-in"
+                    class="px-3 py-1 rounded-xl bg-gray-200 text-gray-700 hover:text-black text-xs font-black uppercase tracking-wider transition-all">Inches (IN)</button>
+            </div>
+        </div>
+
+        <!-- Size Table -->
+        <div class="overflow-x-auto border border-gray-200 rounded-2xl mb-6">
+            <table class="w-full text-xs text-left">
+                <thead class="bg-gray-100 text-gray-600 uppercase font-black text-[10px] tracking-wider border-b border-gray-200">
+                    <tr>
+                        <th class="p-3">Size</th>
+                        <th class="p-3">US</th>
+                        <th class="p-3">UK</th>
+                        <th class="p-3">EU</th>
+                        <th class="p-3">Chest / Bust</th>
+                        <th class="p-3">Waist</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 font-medium">
+                    {% for row in product.size_guide %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3 font-black text-gray-900">{{ row.size }}</td>
+                        <td class="p-3">{{ row.us }}</td>
+                        <td class="p-3">{{ row.uk }}</td>
+                        <td class="p-3">{{ row.eu }}</td>
+                        <td class="p-3 unit-chest" data-cm="{{ row.chest_cm }} cm" data-in="{{ row.chest_in }} in">{{ row.chest_cm }} cm</td>
+                        <td class="p-3 unit-waist" data-cm="{{ row.waist_cm }} cm" data-in="{{ row.waist_in }} in">{{ row.waist_cm }} cm</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Interactive Fit Predictor Calculator -->
+        <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200">
+            <h4 class="text-xs font-black uppercase tracking-wider text-amber-900 mb-2">Automated Size Matcher</h4>
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                    <label class="text-[10px] font-bold text-gray-600 uppercase">Height (cm or inches)</label>
+                    <input type="number" id="calc-height" placeholder="e.g. 175" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs outline-none">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-gray-600 uppercase">Weight (kg or lbs)</label>
+                    <input type="number" id="calc-weight" placeholder="e.g. 68" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs outline-none">
+                </div>
+            </div>
+            <button type="button" onclick="runFitPrediction()" class="w-full py-2.5 bg-black text-white rounded-xl text-xs font-black uppercase tracking-wider hover:bg-amber-400 hover:text-black transition-all">
+                Calculate Recommended Size
+            </button>
+            <div id="calc-result" class="hidden mt-3 p-2 bg-white rounded-xl text-center text-xs font-black text-gray-900 border border-amber-300">
+                ✨ Recommended Size: <span id="calc-size-badge" class="text-amber-600">Size M</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================================================== -->
+<!-- PRE-ORDER & BACK-IN-STOCK MODAL -->
+<!-- ==================================================== -->
+<div id="preorder-modal"
+    class="fixed inset-0 z-[3000] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-gray-950 text-white rounded-3xl max-w-md w-full p-8 shadow-2xl relative border border-gray-800">
+        <button type="button" onclick="closePreorderModal()" aria-label="Close Modal"
+            class="absolute top-6 right-6 text-gray-400 hover:text-white text-lg p-2 cursor-pointer">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 text-black">
+            VIP Priority Access
+        </span>
+        <h3 class="text-xl font-black uppercase tracking-tight text-white mt-3 mb-2">Back-in-Stock &amp; Pre-Order</h3>
+        <p class="text-xs text-gray-400 mb-6">Enter your details to receive an instant email and SMS invitation when the next atelier batch arrives.</p>
+
+        <form id="preorder-form" onsubmit="submitPreorderAlert(event)" class="space-y-4">
+            <input type="hidden" name="product_id" value="{{ product.id }}">
+            <div>
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">Email Address</label>
+                <input type="email" id="preorder-email" required placeholder="vip@couture.com"
+                    class="w-full bg-gray-900 border border-gray-800 text-white rounded-xl px-4 py-3 text-xs outline-none focus:border-amber-400">
+            </div>
+            <div>
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">Mobile Phone (Optional SMS Alert)</label>
+                <input type="tel" id="preorder-phone" placeholder="+1 (555) 000-0000"
+                    class="w-full bg-gray-900 border border-gray-800 text-white rounded-xl px-4 py-3 text-xs outline-none focus:border-amber-400">
+            </div>
+            <button type="submit"
+                class="w-full py-3.5 bg-amber-400 hover:bg-amber-300 text-black rounded-xl font-black uppercase text-xs tracking-widest transition-all cursor-pointer">
+                Confirm VIP Notification
+            </button>
+        </form>
+    </div>
+</div>
+
 <script>
+    // State
+    let selectedSku = '{{ product.variants[0].sku if product.variants and product.variants|length > 0 else "" }}';
+    let selectedSize = '{{ product.variants[0].size if product.variants and product.variants|length > 0 else "Standard" }}';
+    let selectedColor = '{{ product.variants[0].color if product.variants and product.variants|length > 0 else "Standard" }}';
+    const basePrice = {{ product.price }};
+    const spinImages = {{ product.spin_images | dump | safe if product.spin_images else '[]' }};
+
     function updateQty(delta) {
         const input = document.getElementById('product-qty');
         if (!input) return;
@@ -265,13 +654,223 @@
         input.value = val;
     }
 
-    function addToCartDetailed(productId) {
+    function selectGalleryImage(imgUrl, btn) {
+        const mainImg = document.getElementById('main-product-img');
+        if (mainImg) mainImg.src = imgUrl;
+
+        document.querySelectorAll('.gallery-thumb').forEach(b => {
+            b.classList.remove('border-black', 'ring-2', 'ring-black/10');
+            b.classList.add('border-transparent');
+        });
+        if (btn) {
+            btn.classList.add('border-black', 'ring-2', 'ring-black/10');
+            btn.classList.remove('border-transparent');
+        }
+    }
+
+    function selectVariantColor(color, sku, offset, imgUrl, btn) {
+        selectedColor = color;
+        selectedSku = sku;
+        document.getElementById('selected-color-label').textContent = color;
+        document.getElementById('variant-sku-display').textContent = 'SKU: ' + sku;
+
+        // Update active swatch
+        document.querySelectorAll('.variant-color-btn').forEach(b => {
+            b.classList.remove('border-black', 'ring-2', 'ring-black/20');
+            b.classList.add('border-gray-200');
+        });
+        if (btn) {
+            btn.classList.add('border-black', 'ring-2', 'ring-black/20');
+            btn.classList.remove('border-gray-200');
+        }
+
+        // Swap image
+        if (imgUrl) selectGalleryImage(imgUrl);
+    }
+
+    function selectVariantSize(size, sku, stock, btn) {
+        selectedSize = size;
+        selectedSku = sku;
+        document.getElementById('variant-sku-display').textContent = 'SKU: ' + sku;
+
+        document.querySelectorAll('.variant-size-btn').forEach(b => {
+            b.className = 'variant-size-btn py-3 rounded-xl border-2 border-gray-200 text-gray-800 hover:border-black font-bold text-xs uppercase tracking-wider transition-all cursor-pointer text-center relative';
+        });
+        if (btn) {
+            btn.className = 'variant-size-btn py-3 rounded-xl border-2 border-black bg-black text-white font-black text-xs uppercase tracking-wider transition-all cursor-pointer text-center relative';
+        }
+    }
+
+    function addToBagWithVariants(productId) {
         const qty = parseInt(document.getElementById('product-qty')?.value || 1);
-        addToCart(productId, qty);
+        const formData = new URLSearchParams();
+        formData.append('quantity', qty);
+        formData.append('variant_sku', selectedSku);
+        formData.append('size', selectedSize);
+        formData.append('color', selectedColor);
+        formData.append('ajax', '1');
+
+        fetch(`/add_to_cart/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: formData.toString()
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                if (typeof updateCartCount === 'function') updateCartCount();
+                if (typeof showNotification === 'function') showNotification('Added ' + selectedColor + ' (' + selectedSize + ') to bag!');
+                if (typeof openCartDrawer === 'function') openCartDrawer();
+            }
+        });
+    }
+
+    // Media Switcher: Photo vs 360 Spin
+    function switchMediaMode(mode) {
+        const photoView = document.getElementById('media-photo-view');
+        const spinView = document.getElementById('media-spin-view');
+        const btnPhoto = document.getElementById('btn-mode-photo');
+        const btnSpin = document.getElementById('btn-mode-spin');
+
+        if (mode === 'photo') {
+            photoView.classList.remove('hidden');
+            spinView.classList.add('hidden');
+            btnPhoto.className = 'text-xs font-black uppercase tracking-widest pb-1 border-b-2 border-black text-black transition-all flex items-center space-x-1.5 cursor-pointer';
+            btnSpin.className = 'text-xs font-black uppercase tracking-widest pb-1 border-b-2 border-transparent text-gray-400 hover:text-black transition-all flex items-center space-x-1.5 cursor-pointer';
+        } else {
+            photoView.classList.add('hidden');
+            spinView.classList.remove('hidden');
+            btnSpin.className = 'text-xs font-black uppercase tracking-widest pb-1 border-b-2 border-black text-black transition-all flex items-center space-x-1.5 cursor-pointer';
+            btnPhoto.className = 'text-xs font-black uppercase tracking-widest pb-1 border-b-2 border-transparent text-gray-400 hover:text-black transition-all flex items-center space-x-1.5 cursor-pointer';
+        }
+    }
+
+    // Interactive 360 Scrub Slider
+    const spinSlider = document.getElementById('spin-slider');
+    const spinImg = document.getElementById('spin-frame-img');
+    const spinDegText = document.getElementById('spin-deg-text');
+    if (spinSlider && spinImg && spinImages.length > 0) {
+        spinSlider.addEventListener('input', (e) => {
+            const idx = parseInt(e.target.value);
+            if (spinImages[idx]) {
+                spinImg.src = spinImages[idx];
+                const deg = Math.round((idx / (spinImages.length - 1)) * 360);
+                if (spinDegText) spinDegText.textContent = `Angle: ${deg}°`;
+            }
+        });
+    }
+
+    // High-Resolution Fabric Zoom Magnifier on hover
+    const zoomContainer = document.getElementById('zoom-container');
+    const mainImg = document.getElementById('main-product-img');
+    if (zoomContainer && mainImg) {
+        zoomContainer.addEventListener('mousemove', (e) => {
+            const rect = zoomContainer.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            mainImg.style.transformOrigin = `${x}% ${y}%`;
+            mainImg.style.transform = 'scale(2.2)';
+        });
+        zoomContainer.addEventListener('mouseleave', () => {
+            mainImg.style.transformOrigin = 'center center';
+            mainImg.style.transform = 'scale(1)';
+        });
+    }
+
+    // Size Guide Modal
+    function openSizeGuideModal() {
+        document.getElementById('size-guide-modal')?.classList.remove('hidden');
+    }
+    function closeSizeGuideModal() {
+        document.getElementById('size-guide-modal')?.classList.add('hidden');
+    }
+    function toggleSizeUnits(unit) {
+        const btnCm = document.getElementById('unit-btn-cm');
+        const btnIn = document.getElementById('unit-btn-in');
+        if (unit === 'cm') {
+            btnCm.className = 'px-3 py-1 rounded-xl bg-black text-white text-xs font-black uppercase tracking-wider transition-all';
+            btnIn.className = 'px-3 py-1 rounded-xl bg-gray-200 text-gray-700 hover:text-black text-xs font-black uppercase tracking-wider transition-all';
+            document.querySelectorAll('.unit-chest').forEach(td => td.textContent = td.getAttribute('data-cm'));
+            document.querySelectorAll('.unit-waist').forEach(td => td.textContent = td.getAttribute('data-waist') || td.getAttribute('data-cm'));
+        } else {
+            btnIn.className = 'px-3 py-1 rounded-xl bg-black text-white text-xs font-black uppercase tracking-wider transition-all';
+            btnCm.className = 'px-3 py-1 rounded-xl bg-gray-200 text-gray-700 hover:text-black text-xs font-black uppercase tracking-wider transition-all';
+            document.querySelectorAll('.unit-chest').forEach(td => td.textContent = td.getAttribute('data-in'));
+            document.querySelectorAll('.unit-waist').forEach(td => td.textContent = td.getAttribute('data-waist-in') || td.getAttribute('data-in'));
+        }
+    }
+
+    function runFitPrediction() {
+        const height = parseFloat(document.getElementById('calc-height')?.value);
+        const weight = parseFloat(document.getElementById('calc-weight')?.value);
+        const result = document.getElementById('calc-result');
+        const badge = document.getElementById('calc-size-badge');
+        if (!height || !weight) return;
+
+        let rec = 'Size M';
+        if (weight < 55) rec = 'Size XS';
+        else if (weight < 65) rec = 'Size S';
+        else if (weight < 78) rec = 'Size M';
+        else if (weight < 90) rec = 'Size L';
+        else rec = 'Size XL';
+
+        if (badge) badge.textContent = rec;
+        if (result) result.classList.remove('hidden');
+    }
+
+    // Preorder Modal
+    function openPreorderModal() {
+        document.getElementById('preorder-modal')?.classList.remove('hidden');
+    }
+    function closePreorderModal() {
+        document.getElementById('preorder-modal')?.classList.add('hidden');
+    }
+    function submitPreorderAlert(e) {
+        e.preventDefault();
+        const email = document.getElementById('preorder-email')?.value;
+        const phone = document.getElementById('preorder-phone')?.value;
+
+        fetch('/api/preorder/notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                product_id: {{ product.id }},
+                email,
+                phone,
+                variant_sku: selectedSku
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            closePreorderModal();
+            if (typeof showNotification === 'function') {
+                showNotification(data.message);
+            }
+        });
+    }
+
+    // Helpful review vote
+    function voteReviewHelpful(reviewId, btn) {
+        fetch('/api/reviews/helpful', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ review_id: reviewId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const span = btn.querySelector('.helpful-count');
+                if (span) span.textContent = data.count;
+                btn.classList.add('text-amber-600');
+            }
+        });
     }
 
     function switchProductTab(tabName) {
-        ['details', 'shipping', 'care'].forEach(t => {
+        ['details', 'shipping', 'inventory'].forEach(t => {
             const btn = document.getElementById('tab-btn-' + t);
             const pane = document.getElementById('tab-pane-' + t);
             if (t === tabName) {

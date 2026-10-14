@@ -67,6 +67,9 @@ function addToCart(productId, quantity = 1) {
             if (data.success) {
                 updateCartCount();
                 showNotification(`Added ${quantity > 1 ? quantity + ' items' : 'item'} to your bag!`);
+                if (typeof openCartDrawer === 'function') {
+                    openCartDrawer();
+                }
             } else {
                 showNotification(data.message || 'Error adding to cart', 'error');
             }

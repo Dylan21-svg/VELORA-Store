@@ -1,149 +1,233 @@
 {% extends "admin/admin_base.html" %}
 
-{% block title %}Dashboard Overview{% endblock %}
+{% block title %}Commercial Executive Overview{% endblock %}
 
 {% block admin_content %}
+<!-- Executive Commercial KPIs -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <!-- Revenue Card -->
-    <div
-        class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+    <!-- Gross Revenue -->
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
         <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center">
-                <i class="fas fa-dollar-sign text-xl"></i>
+            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-lg">
+                <i class="fas fa-dollar-sign"></i>
             </div>
-            <span class="text-green-500 text-xs font-bold bg-green-50 px-2 py-1 rounded-full">+12%</span>
+            <span class="text-emerald-700 text-xs font-black bg-emerald-50 px-2.5 py-1 rounded-full uppercase tracking-wider">+18.4% YoY</span>
         </div>
-        <p class="text-gray-500 text-sm font-medium">Total Revenue</p>
-        <h3 class="text-2xl font-bold text-gray-900 mt-1">${{ "%.2f"|format(total_revenue) }}</h3>
+        <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Gross Merchandise Value</p>
+        <h3 class="text-2xl font-black text-gray-900 mt-1">${{ "%.2f"|format(total_revenue) }}</h3>
     </div>
 
-    <!-- Orders Card -->
-    <div
-        class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+    <!-- Net Luxury Margin (62%) -->
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
         <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center">
-                <i class="fas fa-shopping-cart text-xl"></i>
+            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-lg">
+                <i class="fas fa-chart-line"></i>
             </div>
-            <span class="text-blue-500 text-xs font-bold bg-blue-50 px-2 py-1 rounded-full">+5%</span>
+            <span class="text-amber-700 text-xs font-black bg-amber-50 px-2.5 py-1 rounded-full uppercase tracking-wider">62% COGS Margin</span>
         </div>
-        <p class="text-gray-500 text-sm font-medium">Total Orders</p>
-        <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ total_orders }}</h3>
+        <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Est. Net Profit Margin</p>
+        <h3 class="text-2xl font-black text-gray-900 mt-1">${{ "%.2f"|format(net_margin) }}</h3>
     </div>
 
-    <!-- Products Card -->
-    <div
-        class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+    <!-- Average Order Value (AOV) -->
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
         <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center">
-                <i class="fas fa-box text-xl"></i>
+            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-lg">
+                <i class="fas fa-shopping-bag"></i>
             </div>
-            <span class="text-purple-500 text-xs font-bold bg-purple-50 px-2 py-1 rounded-full">New</span>
+            <span class="text-blue-700 text-xs font-black bg-blue-50 px-2.5 py-1 rounded-full uppercase tracking-wider">Luxury Tier</span>
         </div>
-        <p class="text-gray-500 text-sm font-medium">Active Products</p>
-        <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ total_products }}</h3>
+        <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Average Order Value (AOV)</p>
+        <h3 class="text-2xl font-black text-gray-900 mt-1">${{ "%.2f"|format(average_order_value) }}</h3>
     </div>
 
-    <!-- Conversion Card (Mock) -->
-    <div
-        class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+    <!-- Return Rate % -->
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
         <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-2xl flex items-center justify-center">
-                <i class="fas fa-users text-xl"></i>
+            <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-lg">
+                <i class="fas fa-undo"></i>
             </div>
-            <span class="text-yellow-600 text-xs font-bold bg-yellow-50 px-2 py-1 rounded-full">3.2%</span>
+            <span class="text-purple-700 text-xs font-black bg-purple-50 px-2.5 py-1 rounded-full uppercase tracking-wider">Industry &lt; 8%</span>
         </div>
-        <p class="text-gray-500 text-sm font-medium">Conversion Rate</p>
-        <h3 class="text-2xl font-bold text-gray-900 mt-1">2.4%</h3>
+        <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Client Return Rate</p>
+        <h3 class="text-2xl font-black text-gray-900 mt-1">{{ return_rate }}%</h3>
     </div>
 </div>
 
+<!-- Middle Section: Multi-Warehouse Inventory & Abandoned Cart Recovery -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+    
+    <!-- Multi-Warehouse Low-Stock Alert & Restock Trigger -->
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+            <div class="flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+                <h3 class="font-black text-sm uppercase tracking-wider text-gray-900">Low Stock &amp; Warehouse Replenishment</h3>
+            </div>
+            <span class="text-xs font-bold text-gray-500">&lt; 5 Units Remaining</span>
+        </div>
+
+        <div class="space-y-3">
+            {% for p in low_stock_products %}
+            <div class="p-3.5 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-between gap-4">
+                <div class="flex items-center space-x-3 min-w-0">
+                    <img src="{{ p.image_url }}" alt="{{ p.name }}" class="w-12 h-14 object-cover rounded-xl flex-shrink-0">
+                    <div class="min-w-0">
+                        <h4 class="text-xs font-bold text-gray-900 truncate">{{ p.name }}</h4>
+                        <p class="text-[11px] text-gray-500">
+                            Available: <strong class="{% if p.stock_quantity == 0 %}text-red-600{% else %}text-amber-600{% endif %} font-black">{{ p.stock_quantity }} units</strong>
+                        </p>
+                    </div>
+                </div>
+
+                <form action="/admin/inventory/restock/{{ p.id }}?key=velora2026" method="POST" class="flex items-center space-x-2 flex-shrink-0">
+                    <input type="hidden" name="units" value="15">
+                    <button type="submit" class="px-3.5 py-2 bg-black hover:bg-amber-400 hover:text-black text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer">
+                        + Restock 15 Units
+                    </button>
+                </form>
+            </div>
+            {% endfor %}
+            {% if not low_stock_products %}
+            <p class="text-xs text-gray-500 italic text-center py-6">All atelier pieces maintain optimal vault inventory.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Abandoned Cart Recovery Suite -->
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+            <div>
+                <h3 class="font-black text-sm uppercase tracking-wider text-gray-900">Abandoned Cart Recovery</h3>
+                <p class="text-[11px] text-gray-400">Automated 10% coupon re-engagement sequence</p>
+            </div>
+            <span class="text-xs font-bold text-amber-600">{{ abandoned_carts|length }} Incomplete Checkouts</span>
+        </div>
+
+        <div class="space-y-3">
+            {% for cart in abandoned_carts %}
+            <div class="p-3.5 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                    <div class="flex items-center space-x-2">
+                        <strong class="text-xs text-gray-900 font-bold truncate">{{ cart.email }}</strong>
+                        {% if cart.recovered %}
+                        <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[9px] font-black uppercase">Recovered</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-[11px] text-gray-600 mt-0.5 truncate">{{ cart.items_summary }}</p>
+                    <p class="text-[10px] text-gray-400">{{ cart.time_ago }} · Value: ${{ "%.2f"|format(cart.cart_total) }}</p>
+                </div>
+
+                {% if not cart.recovered %}
+                <form action="/admin/abandoned/recover/{{ cart.id }}?key=velora2026" method="POST" class="flex-shrink-0">
+                    <button type="submit" class="px-3 py-2 bg-amber-400 hover:bg-amber-300 text-black text-[10px] font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer">
+                        Send Recovery Email
+                    </button>
+                </form>
+                {% else %}
+                <span class="text-xs text-emerald-600 font-black"><i class="fas fa-check"></i> Emailed</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<!-- Bottom Section: Recent Orders & Promo Codes Manager -->
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
     <!-- Recent Orders Table -->
-    <div class="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="p-6 border-b border-gray-100 flex items-center justify-between">
-            <h3 class="font-bold text-gray-900">Recent Orders</h3>
-            <a href="{{ url_for('admin_orders') }}?key=velora2026"
-                class="text-accent text-sm font-bold hover:underline">View All</a>
+            <h3 class="font-black text-sm uppercase tracking-wider text-gray-900">Recent Customer Orders</h3>
+            <a href="{{ url_for('admin_orders') }}?key=velora2026" class="text-xs font-black uppercase tracking-wider text-amber-600 hover:underline">View All Orders</a>
         </div>
         <div class="overflow-x-auto">
-            <table class="w-full text-left">
-                <thead class="bg-gray-50 text-gray-500 text-[11px] uppercase tracking-wider">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-gray-50 text-gray-500 text-[10px] uppercase font-black tracking-wider">
                     <tr>
-                        <th class="px-6 py-4 font-bold">Order ID</th>
-                        <th class="px-6 py-4 font-bold">Customer</th>
-                        <th class="px-6 py-4 font-bold">Total</th>
-                        <th class="px-6 py-4 font-bold">Status</th>
-                        <th class="px-6 py-4 font-bold">Date</th>
+                        <th class="px-6 py-4">Order ID</th>
+                        <th class="px-6 py-4">Client</th>
+                        <th class="px-6 py-4">Total</th>
+                        <th class="px-6 py-4">Status</th>
+                        <th class="px-6 py-4">Carrier</th>
+                        <th class="px-6 py-4 text-right">Action</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-gray-100 font-medium">
                     {% for order in recent_orders %}
                     <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-4 text-sm font-bold text-gray-900">#{{ order.id }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-600">{{ order.user_id }}
-                            <!-- Use user relationship if available --></td>
-                        <td class="px-6 py-4 text-sm font-bold text-gray-900">${{ "%.2f"|format(order.total) }}</td>
+                        <td class="px-6 py-4 font-mono font-bold text-gray-900">#{{ order.id }}</td>
+                        <td class="px-6 py-4 text-gray-700 font-bold">{{ order.customer_name or 'VIP Client' }}</td>
+                        <td class="px-6 py-4 font-black text-gray-900">${{ "%.2f"|format(order.total) }}</td>
                         <td class="px-6 py-4">
-                            {% if order.status == 'paid' %}
-                            <span
-                                class="px-3 py-1 bg-green-100 text-green-600 text-[10px] font-bold rounded-full uppercase">Paid</span>
-                            {% elif order.status == 'pending' %}
-                            <span
-                                class="px-3 py-1 bg-yellow-100 text-yellow-600 text-[10px] font-bold rounded-full uppercase">Pending</span>
-                            {% else %}
-                            <span
-                                class="px-3 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold rounded-full uppercase">{{
-                                order.status }}</span>
-                            {% endif %}
+                            <span class="px-2.5 py-1 text-[10px] font-black rounded-full uppercase {% if order.status == 'delivered' %}bg-green-100 text-green-700{% elif order.status == 'shipped' %}bg-blue-100 text-blue-700{% else %}bg-amber-100 text-amber-700{% endif %}">
+                                {{ order.status }}
+                            </span>
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-500">{{ order.created_at.strftime('%b %d, %Y') }}</td>
+                        <td class="px-6 py-4 text-gray-500 font-mono text-[11px]">{{ order.shipping_carrier }}</td>
+                        <td class="px-6 py-4 text-right">
+                            <form action="/admin/orders/fulfill/{{ order.id }}?key=velora2026" method="POST" class="inline-block">
+                                <input type="hidden" name="carrier" value="DHL Express">
+                                <input type="hidden" name="tracking_number" value="{{ order.tracking_number }}">
+                                {% if order.status != 'shipped' and order.status != 'delivered' %}
+                                <button type="submit" class="text-xs font-black text-blue-600 hover:underline">Fulfill DHL</button>
+                                {% else %}
+                                <span class="text-xs text-gray-400">Dispatched</span>
+                                {% endif %}
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
-                    {% if not recent_orders %}
-                    <tr>
-                        <td colspan="5" class="px-6 py-12 text-center text-gray-500 italic">No recent orders found.</td>
-                    </tr>
-                    {% endif %}
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Quick Actions / Activity -->
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
-        <h3 class="font-bold text-gray-900 mb-6">Quick Actions</h3>
-        <div class="space-y-4">
-            <a href="{{ url_for('add_product') }}?key=velora2026"
-                class="flex items-center justify-between p-4 bg-dashboard rounded-2xl hover:bg-secondary/10 transition-colors group">
-                <div class="flex items-center space-x-3">
-                    <div
-                        class="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-primary group-hover:bg-secondary">
-                        <i class="fas fa-plus"></i>
-                    </div>
-                    <span class="font-bold text-sm text-gray-700">Add New Product</span>
+    <!-- Active Promotional Codes & Campaign Creator -->
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6 space-y-6">
+        <div>
+            <h3 class="font-black text-sm uppercase tracking-wider text-gray-900 mb-1">Active Promo Engine</h3>
+            <p class="text-[11px] text-gray-400">Discounts and campaign coupons</p>
+        </div>
+
+        <div class="space-y-3">
+            {% for promo in promos %}
+            <div class="p-3 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-between text-xs">
+                <div>
+                    <span class="font-mono font-black text-gray-900 bg-white px-2 py-0.5 rounded border border-gray-300">{{ promo.code }}</span>
+                    <p class="text-[10px] text-gray-500 mt-1">{{ promo.description }}</p>
                 </div>
-                <i class="fas fa-chevron-right text-gray-400"></i>
-            </a>
-            <a href="{{ url_for('admin_products') }}?key=velora2026"
-                class="flex items-center justify-between p-4 bg-dashboard rounded-2xl hover:bg-secondary/10 transition-colors group">
-                <div class="flex items-center space-x-3">
-                    <div
-                        class="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-primary group-hover:bg-secondary">
-                        <i class="fas fa-boxes"></i>
-                    </div>
-                    <span class="font-bold text-sm text-gray-700">Inventory Status</span>
+                <div class="text-right">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Redeemed</span>
+                    <strong class="text-gray-900">{{ promo.usage_count }} times</strong>
                 </div>
-                <i class="fas fa-chevron-right text-gray-400"></i>
-            </a>
-            <div class="p-4 border-2 border-dashed border-gray-200 rounded-3xl mt-8 text-center">
-                <div
-                    class="w-12 h-12 bg-gray-100 rounded-2xl mx-auto flex items-center justify-center text-gray-400 mb-3">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                </div>
-                <p class="text-xs font-bold text-gray-500">Bulk Import Data</p>
-                <p class="text-[10px] text-gray-400 px-4 mt-1">Drag and drop CSV files to update inventory</p>
             </div>
+            {% endfor %}
+        </div>
+
+        <!-- Add New Promo Form -->
+        <div class="pt-4 border-t border-gray-100">
+            <h4 class="text-xs font-black uppercase tracking-wider text-gray-700 mb-3">Launch New Coupon Campaign</h4>
+            <form action="/admin/promos/create?key=velora2026" method="POST" class="space-y-3">
+                <input type="text" name="code" required placeholder="CODE (e.g. LUXE25)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono font-bold uppercase outline-none focus:border-black">
+                <div class="grid grid-cols-2 gap-2">
+                    <select name="type" class="bg-gray-50 border border-gray-200 rounded-xl px-2 py-2 text-xs font-bold outline-none">
+                        <option value="percentage">% Discount</option>
+                        <option value="fixed">$ Flat Off</option>
+                        <option value="free_shipping">Free Shipping</option>
+                    </select>
+                    <input type="number" name="value" required placeholder="Value (e.g. 25)" class="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-black">
+                </div>
+                <input type="number" name="min_spend" placeholder="Min Spend ($)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-black">
+                <input type="text" name="description" placeholder="Campaign description" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-black">
+                <button type="submit" class="w-full py-2.5 bg-black hover:bg-amber-400 hover:text-black text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer">
+                    Activate Campaign Code
+                </button>
+            </form>
         </div>
     </div>
+
 </div>
 {% endblock %}

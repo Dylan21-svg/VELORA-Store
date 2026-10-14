@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Velora Store</title>
+    <meta name="description" content="A luxury e-commerce fashion store with dynamic theming, shopping cart, mobile money/PayPal checkout, customer accounts, and an admin dashboard.">
+    <meta property="og:title" content="Velora Store">
+    <meta property="og:description" content="A luxury e-commerce fashion store with dynamic theming, shopping cart, mobile money/PayPal checkout, customer accounts, and an admin dashboard.">
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
@@ -14,107 +17,150 @@
     {% block extra_css %}{% endblock %}
 </head>
 
-<body class="bg-white">
+<body class="bg-white text-gray-900 antialiased selection:bg-black selection:text-white">
+
+    <!-- Flash Promo & Currency Announcement Bar -->
+    <div class="bg-black text-white text-[11px] font-bold tracking-wider py-2 px-4 border-b border-gray-800">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div class="flex items-center space-x-2">
+                <span class="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                <span class="uppercase tracking-widest text-amber-300">PARISIAN RUNWAY DROP</span>
+                <span class="text-gray-400 hidden md:inline">|</span>
+                <span class="text-gray-300 font-medium">Use code <span class="text-white font-black bg-gray-800 px-1.5 py-0.5 rounded border border-gray-700">VELORA15</span> for 15% off orders over $100</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-1.5 text-gray-300 font-mono text-[10px]">
+                    <i class="far fa-clock text-amber-400"></i>
+                    <span>ENDS IN:</span>
+                    <span id="flash-countdown" class="text-amber-400 font-bold">2d 14h 32m 45s</span>
+                </div>
+                <!-- Currency Selector -->
+                <div class="flex items-center space-x-1 border-l border-gray-700 pl-3">
+                    <i class="fas fa-globe text-gray-400 text-xs"></i>
+                    <select aria-label="Select currency" class="js-currency-select bg-black text-white text-[11px] font-bold border-none outline-none cursor-pointer hover:text-amber-300 transition-colors">
+                        {% for curr in currencies %}
+                        <option value="{{ curr.code }}" {% if curr.code == current_currency %}selected{% endif %}>
+                            {{ curr.code }} ({{ curr.symbol }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="header-v1">
         <div class="container-menu-desktop" id="header-container">
-            <div class="wrap-menu-desktop">
-                <!-- Mobile Hamburger Button -->
-                <button type="button" onclick="toggleMobileNav()" aria-label="Open Navigation"
-                    class="lg:hidden text-2xl text-gray-800 hover:text-[var(--dynamic-color)] p-2 focus:outline-none cursor-pointer">
-                    <i class="fas fa-bars"></i>
-                </button>
+            <div class="wrap-menu-desktop flex items-center justify-between">
+                <!-- Left Section: Mobile Toggle + Logo + Nav Menu -->
+                <div class="flex items-center">
+                    <!-- Mobile Hamburger Button -->
+                    <button type="button" onclick="toggleMobileNav()" aria-label="Open Navigation"
+                        class="lg:hidden text-2xl text-gray-800 hover:text-[var(--dynamic-color)] mr-3 p-1 focus:outline-none cursor-pointer">
+                        <i class="fas fa-bars"></i>
+                    </button>
 
-                <!-- Logo -->
-                <a href="{{ url_for('index') }}" class="logo flex items-center">
-                    <span id="logo-velora"
-                        class="text-2xl sm:text-3xl font-black tracking-tighter transition-colors duration-500">VELORA</span>
-                    <span id="logo-store"
-                        class="text-2xl sm:text-3xl font-black tracking-tighter text-gray-800 ml-1.5 transition-colors duration-500">STORE</span>
-                </a>
+                    <!-- Logo as Home Link -->
+                    <a href="{{ url_for('index') }}" class="logo flex items-center shrink-0" title="Velora Store Home">
+                        <span id="logo-velora"
+                            class="text-2xl sm:text-3xl font-black tracking-tighter transition-colors duration-500">VELORA</span>
+                        <span id="logo-store"
+                            class="text-2xl sm:text-3xl font-black tracking-tighter text-gray-800 ml-1.5 transition-colors duration-500">STORE</span>
+                    </a>
 
-                <!-- Desktop Menu -->
-                <div class="menu-desktop hidden lg:flex">
-                    <ul class="main-menu flex items-center space-x-8">
-                        <li class="relative {% if request.endpoint == 'index' %}active-menu{% endif %}">
-                            <a href="{{ url_for('index') }}" class="py-2 text-sm font-bold tracking-wide transition-colors">Home</a>
-                            {% if request.endpoint == 'index' %}<span class="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--dynamic-color)]"></span>{% endif %}
-                        </li>
-                        <li class="relative {% if request.endpoint == 'shop' %}active-menu{% endif %}">
-                            <a href="{{ url_for('shop') }}" class="py-2 text-sm font-bold tracking-wide transition-colors">Shop</a>
-                            {% if request.endpoint == 'shop' %}<span class="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--dynamic-color)]"></span>{% endif %}
-                        </li>
-                        <li class="relative {% if request.endpoint == 'features' %}active-menu{% endif %}">
-                            <a href="{{ url_for('features') }}" class="py-2 text-sm font-bold tracking-wide transition-colors">Features</a>
-                            {% if request.endpoint == 'features' %}<span class="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--dynamic-color)]"></span>{% endif %}
-                        </li>
-                        <li class="relative {% if request.endpoint == 'about' %}active-menu{% endif %}">
-                            <a href="{{ url_for('about') }}" class="py-2 text-sm font-bold tracking-wide transition-colors">About</a>
-                            {% if request.endpoint == 'about' %}<span class="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--dynamic-color)]"></span>{% endif %}
-                        </li>
-                        <li class="relative {% if request.endpoint == 'contact' %}active-menu{% endif %}">
-                            <a href="{{ url_for('contact') }}" class="py-2 text-sm font-bold tracking-wide transition-colors">Contact</a>
-                            {% if request.endpoint == 'contact' %}<span class="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--dynamic-color)]"></span>{% endif %}
-                        </li>
-                        {% if current_user.is_admin %}
-                        <li class="relative">
-                            <a href="{{ url_for('admin_dashboard') }}?key=velora2026" class="py-2 text-sm font-bold text-red-600 hover:text-red-700 tracking-wide">Admin</a>
-                        </li>
-                        {% endif %}
-                    </ul>
+                    <!-- Desktop Menu: generous space from logo (ml-9 xl:ml-12), tight link spacing (space-x-5 xl:space-x-6) -->
+                    <nav class="menu-desktop hidden lg:flex items-center ml-9 xl:ml-12 shrink-0">
+                        <ul class="main-menu flex items-center space-x-5 xl:space-x-6">
+                            <li class="relative {% if request.endpoint == 'shop' %}active-menu{% endif %}">
+                                <a href="{{ url_for('shop') }}" class="py-2 text-[13px] font-bold tracking-wide transition-colors">Shop</a>
+                                {% if request.endpoint == 'shop' %}<span class="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--dynamic-color)]"></span>{% endif %}
+                            </li>
+                            <li class="relative {% if request.endpoint == 'features' %}active-menu{% endif %}">
+                                <a href="{{ url_for('features') }}" class="py-2 text-[13px] font-bold tracking-wide transition-colors">Features</a>
+                                {% if request.endpoint == 'features' %}<span class="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--dynamic-color)]"></span>{% endif %}
+                            </li>
+                            <li class="relative {% if request.endpoint == 'about' %}active-menu{% endif %}">
+                                <a href="{{ url_for('about') }}" class="py-2 text-[13px] font-bold tracking-wide transition-colors">About</a>
+                                {% if request.endpoint == 'about' %}<span class="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--dynamic-color)]"></span>{% endif %}
+                            </li>
+                            <li class="relative {% if request.endpoint == 'contact' %}active-menu{% endif %}">
+                                <a href="{{ url_for('contact') }}" class="py-2 text-[13px] font-bold tracking-wide transition-colors">Contact</a>
+                                {% if request.endpoint == 'contact' %}<span class="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--dynamic-color)]"></span>{% endif %}
+                            </li>
+                            {% if current_user.is_admin %}
+                            <li class="relative">
+                                <a href="{{ url_for('admin_dashboard') }}?key=velora2026" class="py-2 text-[13px] font-black text-red-600 hover:text-red-700 tracking-wide flex items-center space-x-1">
+                                    <i class="fas fa-shield-alt text-xs"></i>
+                                    <span>Admin</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
                 </div>
 
-                <!-- Desktop Search Bar -->
-                <div class="header-search-wrap hidden sm:flex items-center mx-2 lg:mx-4">
-                    <form action="{{ url_for('search') }}" method="GET" class="relative flex items-center group">
-                        <input type="text"
-                            name="q"
-                            value="{{ query if query else '' }}"
-                            placeholder="Search products..."
-                            class="w-36 md:w-52 lg:w-64 focus:w-72 bg-gray-100/90 hover:bg-gray-100 focus:bg-white text-gray-800 text-xs font-medium pl-9 pr-7 py-2 rounded-full border border-gray-200 focus:border-black focus:ring-2 focus:ring-black/10 outline-none transition-all duration-300 placeholder-gray-400">
-                        <button type="submit" aria-label="Search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-gray-600 group-focus-within:text-black transition-colors cursor-pointer">
-                            <i class="fas fa-search text-xs"></i>
+                <!-- Right Section: Search Bar + Action Icons -->
+                <div class="flex items-center space-x-3 sm:space-x-4 shrink-0">
+                    <!-- Desktop Search Bar -->
+                    <div class="header-search-wrap hidden sm:flex items-center">
+                        <form action="{{ url_for('search') }}" method="GET" class="relative flex items-center group">
+                            <input type="text"
+                                name="q"
+                                value="{{ query if query else '' }}"
+                                placeholder="Search luxury pieces..."
+                                class="w-36 md:w-44 lg:w-52 xl:w-60 focus:w-64 bg-gray-100/90 hover:bg-gray-100 focus:bg-white text-gray-800 text-xs font-medium pl-8 pr-7 py-2 rounded-full border border-gray-200 focus:border-black focus:ring-1 focus:ring-black outline-none transition-all duration-300 placeholder-gray-400">
+                            <button type="submit" aria-label="Search" class="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-gray-600 group-focus-within:text-black transition-colors cursor-pointer">
+                                <i class="fas fa-search text-xs"></i>
+                            </button>
+                            {% if query %}
+                            <a href="{{ url_for('shop') }}" aria-label="Clear search" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 text-xs" title="Clear search">
+                                <i class="fas fa-times"></i>
+                            </a>
+                            {% endif %}
+                        </form>
+                    </div>
+
+                    <!-- Icons & User Header -->
+                    <div class="wrap-icon-header flex items-center space-x-3 sm:space-x-4">
+                        <div class="sm:hidden text-lg text-gray-700 hover:text-black cursor-pointer js-show-modal-search" title="Search">
+                            <i class="fas fa-search"></i>
+                        </div>
+
+                        <a href="{{ url_for('wishlist') }}"
+                            class="icon-header-item icon-header-noti text-lg text-gray-700 hover:text-[var(--dynamic-color)] transition-colors" data-notify="{{ wishlist_count }}"
+                            id="wishlist-icon" title="Wishlist & Registry">
+                            <i class="fas fa-heart"></i>
+                        </a>
+
+                        <!-- Cart Icon with Drawer Trigger -->
+                        <button type="button" onclick="openCartDrawer()"
+                            class="icon-header-item icon-header-noti text-lg text-gray-700 hover:text-[var(--dynamic-color)] transition-colors cursor-pointer relative"
+                            data-notify="{{ cart_count }}"
+                            id="cart-icon" title="Shopping Bag">
+                            <i class="fas fa-shopping-bag"></i>
                         </button>
-                        {% if query %}
-                        <a href="{{ url_for('shop') }}" aria-label="Clear search" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 text-xs" title="Clear search">
-                            <i class="fas fa-times"></i>
+
+                        {% if current_user.is_authenticated %}
+                        <div class="flex items-center space-x-2 border-l border-gray-200 pl-3">
+                            <a href="{{ url_for('dashboard') }}" class="flex items-center space-x-1.5 text-gray-700 hover:text-black transition-colors" title="VIP Account">
+                                <i class="fas fa-user-circle text-xl"></i>
+                                {% if vip_info %}
+                                <span class="hidden xl:inline-block px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-black text-amber-300 border border-amber-400/40">
+                                    {{ vip_info.tier }}
+                                </span>
+                                {% endif %}
+                            </a>
+                            <a href="{{ url_for('logout') }}"
+                                class="hidden md:inline-block text-[11px] font-black uppercase tracking-wider text-gray-400 hover:text-black">Logout</a>
+                        </div>
+                        {% else %}
+                        <a href="{{ url_for('login') }}"
+                            class="hidden sm:inline-block px-3.5 py-1.5 bg-black text-white rounded-xl text-[11px] font-black uppercase tracking-wider hover:bg-[var(--dynamic-color)] transition-all">
+                            Sign In
                         </a>
                         {% endif %}
-                    </form>
-                </div>
-
-                <!-- Icons & User Header -->
-                <div class="wrap-icon-header flex items-center space-x-4 sm:space-x-6">
-                    <div class="sm:hidden text-lg text-gray-700 hover:text-black cursor-pointer js-show-modal-search" title="Search">
-                        <i class="fas fa-search"></i>
                     </div>
-
-                    <a href="{{ url_for('wishlist') }}"
-                        class="icon-header-item icon-header-noti text-lg text-gray-700 hover:text-[var(--dynamic-color)] transition-colors" data-notify="0"
-                        id="wishlist-icon" title="Wishlist">
-                        <i class="fas fa-heart"></i>
-                    </a>
-
-                    <a href="{{ url_for('cart') }}"
-                        class="icon-header-item icon-header-noti text-lg text-gray-700 hover:text-[var(--dynamic-color)] transition-colors" data-notify="0"
-                        id="cart-icon" title="Shopping Bag">
-                        <i class="fas fa-shopping-bag"></i>
-                    </a>
-
-                    {% if current_user.is_authenticated %}
-                    <div class="flex items-center space-x-2 border-l border-gray-200 pl-3">
-                        <a href="{{ url_for('dashboard') }}" class="text-gray-700 hover:text-black transition-colors" title="Account Dashboard">
-                            <i class="fas fa-user-circle text-xl"></i>
-                        </a>
-                        <a href="{{ url_for('logout') }}"
-                            class="hidden md:inline-block text-[11px] font-black uppercase tracking-wider text-gray-500 hover:text-black">Logout</a>
-                    </div>
-                    {% else %}
-                    <a href="{{ url_for('login') }}"
-                        class="hidden sm:inline-block px-4 py-2 bg-black text-white rounded-xl text-[11px] font-black uppercase tracking-wider hover:bg-[var(--dynamic-color)] transition-all">
-                        Sign In
-                    </a>
-                    {% endif %}
                 </div>
             </div>
         </div>
@@ -129,30 +175,37 @@
         <div>
             <!-- Drawer Header -->
             <div class="flex items-center justify-between pb-6 border-b border-gray-100">
-                <div class="flex items-center">
+                <a href="{{ url_for('index') }}" class="flex items-center">
                     <span class="text-2xl font-black tracking-tighter text-[var(--dynamic-color)]">VELORA</span>
                     <span class="text-2xl font-black tracking-tighter text-gray-900 ml-1">STORE</span>
-                </div>
+                </a>
                 <button type="button" onclick="toggleMobileNav()" aria-label="Close Navigation"
                     class="text-xl text-gray-400 hover:text-black p-2 cursor-pointer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
 
+            <!-- Currency on Mobile -->
+            <div class="mt-4 p-3 bg-gray-50 rounded-xl flex items-center justify-between">
+                <span class="text-xs font-bold text-gray-600">Currency</span>
+                <select class="js-currency-select bg-transparent text-xs font-black text-black outline-none cursor-pointer">
+                    {% for curr in currencies %}
+                    <option value="{{ curr.code }}" {% if curr.code == current_currency %}selected{% endif %}>
+                        {{ curr.code }} ({{ curr.symbol }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
             <!-- Mobile Search Input -->
-            <form action="{{ url_for('search') }}" method="GET" class="relative mt-6">
-                <input type="text" name="q" placeholder="Search products..."
+            <form action="{{ url_for('search') }}" method="GET" class="relative mt-4">
+                <input type="text" name="q" placeholder="Search luxury catalog..."
                     class="w-full bg-gray-100 text-gray-800 text-xs font-bold pl-9 pr-4 py-3 rounded-xl border border-transparent focus:border-black outline-none">
                 <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
             </form>
 
             <!-- Navigation Links -->
-            <nav class="mt-8 space-y-2">
-                <a href="{{ url_for('index') }}"
-                    class="flex items-center justify-between p-3 rounded-xl font-bold text-sm {% if request.endpoint == 'index' %}bg-gray-100 text-black font-black{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
-                    <span>Home</span>
-                    <i class="fas fa-chevron-right text-xs text-gray-400"></i>
-                </a>
+            <nav class="mt-6 space-y-2">
                 <a href="{{ url_for('shop') }}"
                     class="flex items-center justify-between p-3 rounded-xl font-bold text-sm {% if request.endpoint == 'shop' %}bg-gray-100 text-black font-black{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
                     <span>Shop Catalog</span>
@@ -170,13 +223,13 @@
                 </a>
                 <a href="{{ url_for('contact') }}"
                     class="flex items-center justify-between p-3 rounded-xl font-bold text-sm {% if request.endpoint == 'contact' %}bg-gray-100 text-black font-black{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
-                    <span>Contact</span>
+                    <span>Contact Concierge</span>
                     <i class="fas fa-chevron-right text-xs text-gray-400"></i>
                 </a>
                 {% if current_user.is_admin %}
                 <a href="{{ url_for('admin_dashboard') }}?key=velora2026"
                     class="flex items-center justify-between p-3 rounded-xl font-bold text-sm text-red-600 hover:bg-red-50">
-                    <span>Admin Dashboard</span>
+                    <span>Admin Back-Office</span>
                     <i class="fas fa-shield-alt text-xs"></i>
                 </a>
                 {% endif %}
@@ -189,7 +242,7 @@
             <div class="space-y-2">
                 <a href="{{ url_for('dashboard') }}" class="flex items-center space-x-3 p-3 rounded-xl bg-gray-50 text-gray-900 font-bold text-xs">
                     <i class="fas fa-user-circle text-lg"></i>
-                    <span>{{ current_user.username }}'s Dashboard</span>
+                    <span>{{ current_user.username }}'s VIP Portal</span>
                 </a>
                 <a href="{{ url_for('logout') }}" class="block text-center py-2 text-xs font-black uppercase text-gray-500 hover:text-red-500">
                     Sign Out
@@ -208,24 +261,212 @@
         </div>
     </div>
 
-    <!-- Modal Search (Overlay) -->
-    <div id="search-modal"
-        class="fixed inset-0 z-[2000] invisible opacity-0 transition-all duration-300 flex items-center justify-center modal-search-header bg-white/95 backdrop-blur-md">
-        <button class="absolute top-8 right-8 text-3xl text-gray-400 hover:text-black transition-colors"
-            onclick="hideSearchModal()">
-            <i class="fas fa-times"></i>
-        </button>
-        <div class="w-full max-w-3xl px-6">
-            <form action="{{ url_for('search') }}" method="GET" class="relative group">
-                <input type="text" name="q" placeholder="Type product name and hit Enter..."
-                    class="w-full text-3xl sm:text-5xl font-black bg-transparent border-b-4 border-gray-200 focus:border-black outline-none pb-4 transition-colors text-gray-900 placeholder:text-gray-300">
-                <button type="submit"
-                    class="absolute right-0 top-1/2 -translate-y-1/2 text-3xl text-gray-300 group-focus-within:text-black transition-colors">
-                    <i class="fas fa-search"></i>
+    <!-- ==================================================== -->
+    <!-- PERSISTENT SLIDE-OUT MINI CART DRAWER -->
+    <!-- ==================================================== -->
+    <div id="cart-drawer-backdrop"
+        class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[2500] opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <aside id="cart-drawer"
+        class="fixed top-0 right-0 bottom-0 w-full sm:w-[460px] bg-black text-white z-[2600] shadow-2xl flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-out border-l border-gray-800">
+        
+        <!-- Drawer Header -->
+        <div class="p-6 border-b border-gray-800/80 bg-gray-950/80">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <h3 class="text-base font-black tracking-tight text-white uppercase">Your Shopping Bag</h3>
+                    <span class="text-xs px-2 py-0.5 rounded-full bg-amber-400 text-black font-black">ATELIER</span>
+                </div>
+                <button type="button" onclick="closeCartDrawer()" aria-label="Close Bag"
+                    class="text-gray-400 hover:text-white p-2 text-lg cursor-pointer">
+                    <i class="fas fa-times"></i>
                 </button>
-            </form>
+            </div>
+
+            <!-- Dynamic Free Shipping Progress Bar -->
+            <div class="mt-4 p-3 rounded-xl bg-gray-900 border border-gray-800">
+                <div id="drawer-shipping-text" class="text-xs text-gray-300 mb-2 leading-tight">
+                    Add <span class="text-white font-bold">$150.00</span> for <span class="text-amber-300 font-bold">Complimentary Express Courier</span>
+                </div>
+                <div class="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                    <div id="drawer-shipping-progress" class="h-full bg-gradient-to-r from-amber-400 to-amber-200 rounded-full transition-all duration-500" style="width: 0%;"></div>
+                </div>
+            </div>
         </div>
+
+        <!-- Drawer Items (Scrollable) -->
+        <div class="flex-1 overflow-y-auto px-6 py-2 divide-y divide-gray-800/60 custom-scrollbar" id="cart-drawer-items">
+            <!-- Dynamic items populated by commercial.js -->
+            <div class="py-12 text-center text-gray-400">
+                <i class="fas fa-spinner fa-spin text-2xl mb-2 text-amber-400"></i>
+                <p class="text-xs uppercase tracking-widest">Loading your bag...</p>
+            </div>
+        </div>
+
+        <!-- In-Drawer Upsells & Curated Cross-Sells -->
+        <div class="px-6 py-3 border-t border-gray-800/60 bg-gray-950/40">
+            <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Curated Additions</p>
+            <div class="space-y-2" id="drawer-cross-sells">
+                <!-- Injected via commercial.js -->
+            </div>
+        </div>
+
+        <!-- Drawer Footer: Gift Wrap, Promo & Totals -->
+        <div class="p-6 border-t border-gray-800 bg-gray-950">
+            <!-- Gift Wrapping Option -->
+            <div class="mb-4 p-3 rounded-xl bg-gray-900/90 border border-gray-800">
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center space-x-2.5 cursor-pointer">
+                        <input type="checkbox" id="drawer-gift-checkbox" onchange="toggleDrawerGiftWrap(this)" class="accent-amber-400 w-4 h-4 rounded cursor-pointer">
+                        <span class="text-xs font-bold text-white flex items-center">
+                            <i class="fas fa-gift text-amber-400 mr-1.5"></i> Luxury Gift Packaging
+                        </span>
+                    </label>
+                    <span class="text-xs text-amber-300 font-bold" id="drawer-gift-fee">+ $15.00</span>
+                </div>
+                <p class="text-[11px] text-gray-400 mt-1 pl-6">Hand-tied silk ribbon, wax seal, and personalized calligraphy note.</p>
+            </div>
+
+            <!-- Promo Code Input -->
+            <div class="flex items-center space-x-2 mb-4">
+                <input type="text" id="drawer-promo-input" placeholder="Promo code (e.g. VELORA15)"
+                    class="flex-1 bg-gray-900 border border-gray-700 text-white placeholder-gray-500 text-xs px-3 py-2.5 rounded-xl uppercase outline-none focus:border-amber-400">
+                <button type="button" onclick="applyDrawerPromo()" class="px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all">
+                    Apply
+                </button>
+            </div>
+
+            <!-- Totals breakdown -->
+            <div class="space-y-1.5 text-xs text-gray-400 mb-4">
+                <div class="flex justify-between">
+                    <span>Subtotal</span>
+                    <span class="text-white font-bold" id="drawer-subtotal">$0.00</span>
+                </div>
+                <div id="drawer-discount-wrap" class="flex justify-between text-amber-400 font-bold hidden">
+                    <span>Discount (<span id="drawer-promo-tag"></span>)</span>
+                    <span id="drawer-discount">-$0.00</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>White-Glove Express Shipping</span>
+                    <span class="text-white font-semibold" id="drawer-shipping-fee">COMPLIMENTARY</span>
+                </div>
+                <div class="flex justify-between pt-2 border-t border-gray-800 text-sm font-black text-white">
+                    <span>Estimated Total</span>
+                    <span id="drawer-total" class="text-amber-400 text-base font-black">$0.00</span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="space-y-2">
+                <a href="{{ url_for('checkout') }}"
+                    class="w-full flex items-center justify-center py-3.5 px-6 bg-white hover:bg-amber-400 text-black rounded-xl text-xs font-black uppercase tracking-widest shadow-2xl transition-all transform hover:scale-[1.02]">
+                    <span>Proceed to Express Checkout</span>
+                    <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                </a>
+                <a href="{{ url_for('cart') }}" onclick="closeCartDrawer()"
+                    class="block text-center text-xs font-bold text-gray-400 hover:text-white py-1">
+                    View Full Shopping Bag
+                </a>
+            </div>
+        </div>
+    </aside>
+
+
+
+    <!-- ==================================================== -->
+    <!-- LIVE LUXURY CONCIERGE CHAT WIDGET -->
+    <!-- ==================================================== -->
+    <button id="concierge-trigger" aria-label="Open Luxury Styling Concierge"
+        class="fixed bottom-6 right-6 z-[2300] w-14 h-14 rounded-full bg-black text-amber-300 border-2 border-amber-400/80 shadow-2xl flex items-center justify-center hover:scale-110 hover:bg-amber-400 hover:text-black transition-all duration-300 cursor-pointer">
+        <i class="fas fa-crown text-lg"></i>
+    </button>
+
+    <div id="concierge-modal"
+        class="fixed bottom-24 right-6 z-[2350] w-96 max-w-[92vw] bg-gray-950 text-white rounded-3xl border border-gray-800 shadow-2xl hidden flex flex-col overflow-hidden backdrop-blur-xl">
+        <!-- Concierge Header -->
+        <div class="p-4 bg-black border-b border-gray-800 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-full bg-amber-400 text-black flex items-center justify-center font-black text-sm">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div>
+                    <h4 class="text-xs font-black uppercase tracking-wider text-white">Velora Atelier Concierge</h4>
+                    <p class="text-[10px] text-emerald-400 flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span>Stylist Online · Paris Atelier</span>
+                    </p>
+                </div>
+            </div>
+            <button id="concierge-close" class="text-gray-400 hover:text-white p-1 text-sm">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Quick Prompts Chips -->
+        <div class="p-3 bg-gray-900/60 border-b border-gray-800/80 flex items-center space-x-2 overflow-x-auto text-[11px] no-scrollbar">
+            <button onclick="conciergeQuickAsk('How do I select the right size?')" class="px-2.5 py-1 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-300 whitespace-nowrap transition-colors">
+                📏 Size & Fit Advice
+            </button>
+            <button onclick="conciergeQuickAsk('What are your express shipping options?')" class="px-2.5 py-1 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-300 whitespace-nowrap transition-colors">
+                ✈️ Shipping & Courier
+            </button>
+            <button onclick="conciergeQuickAsk('What active promo codes do you have?')" class="px-2.5 py-1 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-300 whitespace-nowrap transition-colors">
+                🎟️ Active Promos
+            </button>
+        </div>
+
+        <!-- Messages Area -->
+        <div id="concierge-messages" class="p-4 h-72 overflow-y-auto space-y-3 custom-scrollbar text-xs">
+            <div class="flex justify-start">
+                <div class="bg-gray-800 border border-gray-700 text-gray-200 px-4 py-2.5 rounded-2xl rounded-tl-none leading-relaxed max-w-[85%] shadow">
+                    <div class="flex items-center space-x-1.5 mb-1 text-[10px] text-amber-400 font-bold uppercase tracking-widest">
+                        <i class="fas fa-crown text-[8px]"></i>
+                        <span>Atelier Concierge</span>
+                    </div>
+                    Greetings. Welcome to the House of Velora. I am your personal stylist concierge. How may I assist your wardrobe selection or inquiries today?
+                </div>
+            </div>
+        </div>
+
+        <!-- Concierge Input Form -->
+        <form id="concierge-form" class="p-3 bg-black border-t border-gray-800 flex items-center space-x-2">
+            <input type="text" id="concierge-input" placeholder="Inquire about sizing, fabrics, tracking..."
+                class="flex-1 bg-gray-900 border border-gray-700 text-white placeholder-gray-500 text-xs px-3.5 py-2.5 rounded-full outline-none focus:border-amber-400">
+            <button type="submit" aria-label="Send message" class="w-9 h-9 rounded-full bg-amber-400 text-black flex items-center justify-center font-bold hover:bg-amber-300 transition-colors cursor-pointer">
+                <i class="fas fa-arrow-up text-xs"></i>
+            </button>
+        </form>
     </div>
+
+    <!-- Flash Notifications Container -->
+    {% set flash_messages = get_flashed_messages() %}
+    {% if flash_messages and flash_messages|length > 0 %}
+    <div id="flash-toast-container" class="fixed top-24 right-4 sm:right-6 z-[3000] max-w-sm w-full space-y-2 pointer-events-none">
+        {% for msg in flash_messages %}
+        <div class="flash-toast-item pointer-events-auto bg-gray-950/95 text-white p-4 rounded-2xl shadow-2xl border border-gray-700/70 flex items-start space-x-3 backdrop-blur-md transform transition-all duration-300">
+            <div class="w-6 h-6 rounded-full bg-amber-400 text-black flex items-center justify-center shrink-0 mt-0.5">
+                <i class="fas fa-info text-[10px]"></i>
+            </div>
+            <div class="flex-1 text-xs font-semibold leading-relaxed text-gray-200">
+                {{ msg }}
+            </div>
+            <button onclick="this.closest('.flash-toast-item').remove()" class="text-gray-400 hover:text-white text-xs shrink-0 p-1 cursor-pointer" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    <script>
+        setTimeout(() => {
+            const container = document.getElementById('flash-toast-container');
+            if (container) {
+                container.style.opacity = '0';
+                container.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => container.remove(), 500);
+            }
+        }, 5000);
+    </script>
+    {% endif %}
 
     <!-- Main Content -->
     <main>
@@ -233,57 +474,67 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer-coza">
+    <footer class="footer-coza bg-gray-950 text-gray-400 pt-16 pb-12 border-t border-gray-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
                 <div>
-                    <h4 class="footer-title">Categories</h4>
-                    <ul class="footer-links">
-                        <li><a href="{{ url_for('shop') }}?category=1">Women Collection</a></li>
-                        <li><a href="{{ url_for('shop') }}?category=1">Men Collection</a></li>
-                        <li><a href="{{ url_for('shop') }}?category=2">Footwear &amp; Shoes</a></li>
-                        <li><a href="{{ url_for('shop') }}?category=3">Luxury Watches</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="footer-title">Customer Care</h4>
-                    <ul class="footer-links">
-                        <li><a href="{{ url_for('dashboard') }}">Track Order</a></li>
-                        <li><a href="{{ url_for('help') }}">Returns &amp; Exchanges</a></li>
-                        <li><a href="{{ url_for('help') }}">Shipping Policy</a></li>
-                        <li><a href="{{ url_for('help') }}">Help &amp; FAQs</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="footer-title">Get in touch</h4>
-                    <p class="leading-relaxed text-sm text-gray-400">
-                        Any questions? Visit our boutique on 8th floor, 379 Hudson St, New York, NY 10018 or call our concierge on (+1) 96 716 6879.
+                    <div class="flex items-center mb-6">
+                        <span class="text-2xl font-black tracking-tighter text-white">VELORA</span>
+                        <span class="text-2xl font-black tracking-tighter text-amber-400 ml-1.5">STORE</span>
+                    </div>
+                    <p class="leading-relaxed text-xs text-gray-400 mb-6">
+                        Haute couture fashion, fine jewelry, and handcrafted leather goods curated with zero compromise. Hand-delivered via international white-glove courier.
                     </p>
-                    <div class="flex space-x-4 mt-6">
-                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 text-gray-300 flex items-center justify-center hover:bg-[var(--dynamic-color)] hover:text-white transition-all"><i
-                                class="fab fa-facebook-f text-sm"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 text-gray-300 flex items-center justify-center hover:bg-[var(--dynamic-color)] hover:text-white transition-all"><i
-                                class="fab fa-instagram text-sm"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 text-gray-300 flex items-center justify-center hover:bg-[var(--dynamic-color)] hover:text-white transition-all"><i
-                                class="fab fa-pinterest-p text-sm"></i></a>
+                    <div class="flex items-center space-x-3 text-sm text-gray-400">
+                        <span class="flex items-center space-x-1"><i class="fas fa-lock text-amber-400 text-xs"></i> <span>256-Bit SSL</span></span>
+                        <span>·</span>
+                        <span>Stripe & PayPal</span>
+                        <span>·</span>
+                        <span>FedEx Priority</span>
                     </div>
                 </div>
 
                 <div>
-                    <h4 class="footer-title">Exclusive Access</h4>
-                    <p class="text-xs text-gray-400 mb-4">Be the first to know about private sales, new arrivals, and special drops.</p>
-                    <form action="#" onsubmit="event.preventDefault(); showNotification('Subscribed to newsletter!');" class="newsletter-form">
-                        <input type="email" name="email" required placeholder="email@example.com" class="newsletter-input">
-                        <div class="newsletter-focus"></div>
-                        <button type="submit" class="btn-newsletter trans-04 mt-4 w-full cursor-pointer">Subscribe</button>
+                    <h4 class="text-xs font-black uppercase tracking-widest text-white mb-6 border-l-2 border-amber-400 pl-2">Atelier Catalog</h4>
+                    <ul class="space-y-2.5 text-xs">
+                        <li><a href="{{ url_for('shop') }}?category=1" class="hover:text-amber-400 transition-colors">Evening Gowns & Couture</a></li>
+                        <li><a href="{{ url_for('shop') }}?category=1" class="hover:text-amber-400 transition-colors">Tailored Cashmere & Knitwear</a></li>
+                        <li><a href="{{ url_for('shop') }}?category=2" class="hover:text-amber-400 transition-colors">Hand-Burnished Chelsea Boots</a></li>
+                        <li><a href="{{ url_for('shop') }}?category=3" class="hover:text-amber-400 transition-colors">18K Solid Gold & Titanium Accessories</a></li>
+                        <li><a href="{{ url_for('shop') }}?category=4" class="hover:text-amber-400 transition-colors">Calfskin Structured Satchels</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-black uppercase tracking-widest text-white mb-6 border-l-2 border-amber-400 pl-2">Client Privilège</h4>
+                    <ul class="space-y-2.5 text-xs">
+                        <li><a href="{{ url_for('dashboard') }}" class="hover:text-amber-400 transition-colors">Live Parcel Air Tracking</a></li>
+                        <li><a href="{{ url_for('dashboard') }}" class="hover:text-amber-400 transition-colors">VELORA VIP Loyalty Status</a></li>
+                        <li><a href="{{ url_for('dashboard') }}" class="hover:text-amber-400 transition-colors">Complimentary Return & Exchange Center</a></li>
+                        <li><a href="{{ url_for('wishlist') }}" class="hover:text-amber-400 transition-colors">Shareable Wishlist & Gift Registry</a></li>
+                        <li><a href="{{ url_for('help') }}" class="hover:text-amber-400 transition-colors">Worldwide Courier & Duty Guidelines</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-black uppercase tracking-widest text-white mb-6 border-l-2 border-amber-400 pl-2">VIP Salon Newsletter</h4>
+                    <p class="text-xs text-gray-400 mb-4">Receive invitations to private seasonal salons and limited numbered drops.</p>
+                    <form action="#" onsubmit="event.preventDefault(); showNotification('Welcome to the VIP Salon.');" class="space-y-2">
+                        <input type="email" name="email" required placeholder="vip@couture.com" class="w-full bg-gray-900 border border-gray-800 text-white text-xs px-4 py-3 rounded-xl outline-none focus:border-amber-400">
+                        <button type="submit" class="w-full py-3 bg-white hover:bg-amber-400 text-black text-xs font-black uppercase tracking-widest rounded-xl transition-all">Request VIP Access</button>
                     </form>
                 </div>
             </div>
 
-            <div class="mt-16 pt-8 border-t border-gray-800 text-center text-xs text-gray-500">
-                <p>Copyright &copy; 2026 Velora Store. All rights reserved. Made with <i class="fa fa-heart text-red-500"></i> for an exceptional shopping experience.</p>
+            <div class="mt-16 pt-8 border-t border-gray-900 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-4">
+                <p>&copy; 2026 VELORA COUTURE. All rights reserved. Paris · Milan · New York · London · Tokyo.</p>
+                <div class="flex items-center space-x-4">
+                    <span>Privacy Policy</span>
+                    <span>·</span>
+                    <span>Terms of Trade</span>
+                    <span>·</span>
+                    <span>VAT & Customs</span>
+                </div>
             </div>
         </div>
     </footer>
@@ -292,7 +543,7 @@
     <button id="btn-back-to-top"
         aria-label="Back to top"
         title="Back to top"
-        class="fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full bg-black text-white shadow-2xl flex items-center justify-center opacity-0 pointer-events-none translate-y-4 hover:scale-110 hover:bg-[var(--dynamic-color)] transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-[var(--dynamic-color)]/30 cursor-pointer">
+        class="fixed bottom-24 right-6 sm:bottom-8 sm:right-24 z-50 w-12 h-12 rounded-full bg-black text-white shadow-2xl flex items-center justify-center opacity-0 pointer-events-none translate-y-4 hover:scale-110 hover:bg-amber-400 hover:text-black transition-all duration-300 focus:outline-none cursor-pointer border border-gray-800">
         <i class="fas fa-chevron-up text-base"></i>
     </button>
 
@@ -308,7 +559,6 @@
                 header.classList.remove('fixed-header');
             }
 
-            // Back to Top button toggle visibility
             if (window.scrollY > 300) {
                 backToTopBtn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
                 backToTopBtn.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
@@ -318,7 +568,6 @@
             }
         });
 
-        // Smooth scroll to top on click
         backToTopBtn.addEventListener('click', function () {
             window.scrollTo({
                 top: 0,
@@ -326,7 +575,6 @@
             });
         });
 
-        // Mobile drawer toggling
         function toggleMobileNav() {
             const drawer = document.getElementById('mobile-nav-drawer');
             const backdrop = document.getElementById('mobile-nav-backdrop');
@@ -347,6 +595,7 @@
     </script>
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
     <script src="{{ url_for('static', filename='js/slider.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/commercial.js') }}"></script>
     {% block extra_js %}{% endblock %}
 </body>
 

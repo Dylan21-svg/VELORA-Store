@@ -1,166 +1,456 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="py-12 md:py-20 bg-gray-50/50 min-h-screen">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Breadcrumb / Header -->
-        <div class="mb-10 pb-6 border-b border-gray-200">
-            <span class="text-xs font-black uppercase tracking-[0.25em] text-[var(--dynamic-color)]">Velora Checkout</span>
-            <h1 class="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight mt-1">Secure Checkout</h1>
+<section class="py-12 md:py-20 bg-gray-50/70 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header -->
+        <div class="mb-10 pb-6 border-b border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <span class="text-xs font-black uppercase tracking-[0.25em] text-amber-600">Velora Atelier Checkout</span>
+                <h1 class="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight mt-1 uppercase">Secure White-Glove Checkout</h1>
+            </div>
+            <!-- Trust Seals -->
+            <div class="flex items-center space-x-4 text-xs text-gray-500 font-bold">
+                <span class="flex items-center text-emerald-600"><i class="fas fa-shield-alt mr-1.5 text-sm"></i> 256-Bit TLS Encryption</span>
+                <span>·</span>
+                <span class="flex items-center"><i class="fas fa-plane mr-1.5 text-sm text-gray-700"></i> FedEx / DHL Express</span>
+            </div>
         </div>
 
-        <form action="{{ url_for('checkout') }}" method="POST" class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-            <!-- Left Column: Shipping & Payment -->
-            <div class="lg:col-span-7 space-y-8">
-                <!-- Contact & Shipping Details -->
-                <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100">
-                    <h2 class="text-xl font-black text-gray-900 uppercase tracking-tight mb-6 flex items-center">
-                        <span class="w-8 h-8 rounded-full bg-black text-white text-xs flex items-center justify-center mr-3">1</span>
-                        Shipping Information
-                    </h2>
-
-                    <div class="space-y-5">
-                        <div>
-                            <label for="name" class="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">Full Name</label>
-                            <input type="text" id="name" name="name" required placeholder="Jane Doe"
-                                class="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--dynamic-color)] focus:bg-white rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-900 transition-all outline-none">
-                        </div>
-
-                        <div>
-                            <label for="email" class="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">Email Address</label>
-                            <input type="email" id="email" name="email" required placeholder="jane.doe@example.com"
-                                class="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--dynamic-color)] focus:bg-white rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-900 transition-all outline-none">
-                        </div>
-
-                        <div>
-                            <label for="address" class="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">Shipping Street Address</label>
-                            <textarea id="address" name="address" rows="3" required placeholder="123 Luxury Ave, Apt 4B, City, Country"
-                                class="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--dynamic-color)] focus:bg-white rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-900 transition-all outline-none"></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Payment Selection -->
-                <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100">
-                    <h2 class="text-xl font-black text-gray-900 uppercase tracking-tight mb-6 flex items-center">
-                        <span class="w-8 h-8 rounded-full bg-black text-white text-xs flex items-center justify-center mr-3">2</span>
-                        Payment Method
-                    </h2>
-
-                    <div class="space-y-3">
-                        <label class="flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer hover:bg-gray-50/80 transition-all group has-[:checked]:border-black has-[:checked]:bg-gray-50/50">
-                            <div class="flex items-center space-x-3.5">
-                                <input type="radio" name="payment_method" value="paypal" class="h-4 w-4 text-black focus:ring-0" checked onchange="togglePhoneInput()">
-                                <span class="text-sm font-black text-gray-900">PayPal / Credit Card</span>
-                            </div>
-                            <i class="fab fa-paypal text-blue-600 text-2xl"></i>
-                        </label>
-
-                        <label class="flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer hover:bg-gray-50/80 transition-all group has-[:checked]:border-black has-[:checked]:bg-gray-50/50">
-                            <div class="flex items-center space-x-3.5">
-                                <input type="radio" name="payment_method" value="mtn" class="h-4 w-4 text-black focus:ring-0" onchange="togglePhoneInput()">
-                                <span class="text-sm font-black text-gray-900">MTN Mobile Money</span>
-                            </div>
-                            <span class="font-black px-2.5 py-1 bg-yellow-400 text-black text-xs rounded-lg uppercase tracking-wider">MoMo</span>
-                        </label>
-
-                        <label class="flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer hover:bg-gray-50/80 transition-all group has-[:checked]:border-black has-[:checked]:bg-gray-50/50">
-                            <div class="flex items-center space-x-3.5">
-                                <input type="radio" name="payment_method" value="orange" class="h-4 w-4 text-black focus:ring-0" onchange="togglePhoneInput()">
-                                <span class="text-sm font-black text-gray-900">Orange Money</span>
-                            </div>
-                            <span class="font-black px-2.5 py-1 bg-orange-500 text-white text-xs rounded-lg uppercase tracking-wider">OM</span>
-                        </label>
-                    </div>
-
-                    <!-- Conditional Phone for MoMo/OM -->
-                    <div id="phone-container" class="hidden mt-6 pt-6 border-t border-gray-100 animate-fade-in-up">
-                        <label for="phone_number" class="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">
-                            Mobile Money Phone Number <span class="text-red-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <span class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 font-bold"><i class="fas fa-phone-alt"></i></span>
-                            <input type="tel" id="phone_number" name="phone" placeholder="e.g. +237 670 000 000"
-                                class="w-full bg-gray-50 border-2 border-transparent focus:border-[var(--dynamic-color)] focus:bg-white rounded-2xl pl-12 pr-5 py-3.5 text-sm font-bold text-gray-900 transition-all outline-none">
-                        </div>
-                    </div>
-                </div>
+        <!-- 1-Click Express Wallets (Apple Pay / Google Pay / Google 1-Click) -->
+        <div class="mb-8 p-6 bg-white rounded-3xl border border-gray-200 shadow-sm">
+            <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-3">Express 1-Click Checkout</span>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <button type="button" onclick="expressSocialCheckout('apple')"
+                    class="py-3 px-4 bg-black text-white hover:bg-gray-800 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-md">
+                    <i class="fab fa-apple text-base"></i>
+                    <span>Apple Pay</span>
+                </button>
+                <button type="button" onclick="expressSocialCheckout('google')"
+                    class="py-3 px-4 bg-white border-2 border-gray-200 hover:border-black text-gray-800 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-sm">
+                    <i class="fab fa-google text-red-500"></i>
+                    <span>Google Pay</span>
+                </button>
+                <button type="button" onclick="expressSocialCheckout('paypal')"
+                    class="py-3 px-4 bg-[#0070ba] text-white hover:bg-[#005ea6] rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-md">
+                    <i class="fab fa-paypal text-base text-white"></i>
+                    <span>PayPal Instant</span>
+                </button>
             </div>
+        </div>
 
-            <!-- Right Column: Order Summary Sidebar -->
-            <div class="lg:col-span-5 sticky top-28 space-y-6">
-                <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100">
-                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
-                        <h3 class="text-xl font-black text-gray-900 uppercase tracking-tight">Order Summary</h3>
-                        <a href="{{ url_for('cart') }}" class="text-xs font-bold uppercase tracking-wider text-[var(--dynamic-color)] hover:underline">Edit Bag</a>
-                    </div>
-
-                    <!-- Itemized Product List -->
-                    <div class="space-y-4 max-h-72 overflow-y-auto pr-1 divide-y divide-gray-50 mb-6">
-                        {% if cart_items %}
-                        {% for item in cart_items %}
-                        <div class="pt-4 first:pt-0 flex items-center justify-between space-x-4">
-                            <div class="flex items-center space-x-3.5">
-                                <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" class="w-14 h-14 rounded-xl object-cover border border-gray-100 flex-shrink-0">
-                                <div>
-                                    <h4 class="font-bold text-xs text-gray-900 line-clamp-1">{{ item.product.name }}</h4>
-                                    <span class="text-[11px] font-bold text-gray-400">Qty: {{ item.quantity }} × ${{ "%.2f"|format(item.product.price) }}</span>
-                                </div>
-                            </div>
-                            <span class="font-black text-sm text-gray-900">${{ "%.2f"|format(item.product.price * item.quantity) }}</span>
-                        </div>
-                        {% endfor %}
+        <form action="{{ url_for('checkout') }}" method="POST" id="checkout-form" class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+            
+            <!-- Left: Client Information, Address with Autocomplete & Payment -->
+            <div class="lg:col-span-7 space-y-8">
+                
+                <!-- 1. Client Identity & Guest Checkout -->
+                <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-200">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-lg font-black text-gray-900 uppercase tracking-tight flex items-center">
+                            <span class="w-7 h-7 rounded-full bg-black text-white text-xs flex items-center justify-center mr-3 font-mono">1</span>
+                            Customer &amp; Recipient Details
+                        </h2>
+                        {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('login') }}" class="text-xs font-bold text-amber-600 hover:underline">
+                            Already a VIP member? Sign in
+                        </a>
                         {% endif %}
                     </div>
 
-                    <!-- Totals Breakdown -->
-                    <div class="space-y-3 pt-4 border-t border-gray-100 text-sm font-medium text-gray-600">
-                        <div class="flex justify-between">
-                            <span>Subtotal</span>
-                            <span class="font-bold text-gray-900">${{ "%.2f"|format(total) }}</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1.5">First Name</label>
+                            <input type="text" name="first_name" required placeholder="Elena" value="{{ current_user.username if current_user.is_authenticated else '' }}"
+                                class="w-full bg-gray-50 border border-gray-200 focus:border-black focus:bg-white rounded-xl px-4 py-3 text-xs font-bold text-gray-900 outline-none">
                         </div>
-                        <div class="flex justify-between items-center">
-                            <span>Shipping</span>
-                            <span class="font-black text-xs text-green-600 uppercase bg-green-50 px-2 py-0.5 rounded-full">Free Express</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Taxes</span>
-                            <span class="font-bold text-gray-900">$0.00</span>
-                        </div>
-                        <div class="border-t border-gray-100 pt-4 flex justify-between items-baseline">
-                            <span class="text-base font-black text-gray-900 uppercase tracking-wider">Total</span>
-                            <span class="text-3xl font-black text-gray-900">${{ "%.2f"|format(total) }}</span>
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1.5">Last Name</label>
+                            <input type="text" name="last_name" required placeholder="Rostova"
+                                class="w-full bg-gray-50 border border-gray-200 focus:border-black focus:bg-white rounded-xl px-4 py-3 text-xs font-bold text-gray-900 outline-none">
                         </div>
                     </div>
 
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1.5">Email (For Order Dispatch &amp; Tracking)</label>
+                            <input type="email" name="email" required placeholder="elena@paris-couture.fr" value="{{ current_user.email if current_user.is_authenticated else '' }}"
+                                class="w-full bg-gray-50 border border-gray-200 focus:border-black focus:bg-white rounded-xl px-4 py-3 text-xs font-bold text-gray-900 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1.5">Phone (Courier SMS updates)</label>
+                            <input type="tel" name="phone" placeholder="+33 6 42 19 88 01"
+                                class="w-full bg-gray-50 border border-gray-200 focus:border-black focus:bg-white rounded-xl px-4 py-3 text-xs font-bold text-gray-900 outline-none">
+                        </div>
+                    </div>
+
+                    {% if not current_user.is_authenticated %}
+                    <!-- Optional 1-Click VIP Account Creation -->
+                    <div class="mt-5 p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80">
+                        <label class="flex items-center space-x-2.5 cursor-pointer">
+                            <input type="checkbox" name="create_vip_account" value="1" onchange="toggleAccountPassword(this)" class="w-4 h-4 rounded accent-amber-500 cursor-pointer">
+                            <span class="text-xs font-black text-amber-950 uppercase tracking-wide">
+                                Create a VELORA VIP Privilège Account (Earn 100 Bonus Points)
+                            </span>
+                        </label>
+                        <div id="vip-pass-wrap" class="hidden mt-3 pt-3 border-t border-amber-200/60">
+                            <label class="block text-[10px] font-black uppercase tracking-wider text-gray-600 mb-1">Create VIP Password</label>
+                            <input type="password" name="vip_password" placeholder="Choose a secure password"
+                                class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs outline-none">
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- 2. Shipping Address & Smart Auto-Complete -->
+                <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-200">
+                    <h2 class="text-lg font-black text-gray-900 uppercase tracking-tight mb-2 flex items-center">
+                        <span class="w-7 h-7 rounded-full bg-black text-white text-xs flex items-center justify-center mr-3 font-mono">2</span>
+                        White-Glove Shipping Destination
+                    </h2>
+                    <p class="text-xs text-gray-500 mb-6 pl-10">Hand-delivered in velvet travel dust bags with insured courier signature.</p>
+
+                    <!-- Smart Address Autocomplete Input -->
+                    <div class="mb-4 relative">
+                        <label class="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1.5">
+                            Search Address or Landmark (Smart Autocomplete)
+                        </label>
+                        <div class="relative">
+                            <i class="fas fa-map-marker-alt absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                            <input type="text" id="address-lookup" placeholder="Type city or address (e.g. Park Ave, Place Vendôme, Mayfair...)"
+                                class="w-full bg-gray-50 border border-gray-200 focus:border-black focus:bg-white rounded-xl pl-10 pr-4 py-3 text-xs font-bold text-gray-900 outline-none transition-all">
+                        </div>
+                        <div id="address-suggestions-box" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-2xl shadow-2xl z-30 divide-y divide-gray-100 overflow-hidden text-xs"></div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1.5">Street Address</label>
+                            <input type="text" id="ship-street" name="address" required placeholder="10 Place Vendôme, Suite 402"
+                                class="w-full bg-gray-50 border border-gray-200 focus:border-black focus:bg-white rounded-xl px-4 py-3 text-xs font-bold text-gray-900 outline-none">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1.5">City</label>
+                                <input type="text" id="ship-city" name="city" required placeholder="Paris"
+                                    class="w-full bg-gray-50 border border-gray-200 focus:border-black focus:bg-white rounded-xl px-4 py-3 text-xs font-bold text-gray-900 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1.5">Postal / ZIP Code</label>
+                                <input type="text" id="ship-postal" name="postal_code" required placeholder="75001"
+                                    class="w-full bg-gray-50 border border-gray-200 focus:border-black focus:bg-white rounded-xl px-4 py-3 text-xs font-bold text-gray-900 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1.5">Country / Region</label>
+                                <input type="text" id="ship-country" name="country" required placeholder="France"
+                                    class="w-full bg-gray-50 border border-gray-200 focus:border-black focus:bg-white rounded-xl px-4 py-3 text-xs font-bold text-gray-900 outline-none">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Payment Method Architecture -->
+                <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-200">
+                    <h2 class="text-lg font-black text-gray-900 uppercase tracking-tight mb-6 flex items-center">
+                        <span class="w-7 h-7 rounded-full bg-black text-white text-xs flex items-center justify-center mr-3 font-mono">3</span>
+                        Payment Architecture
+                    </h2>
+
+                    <!-- Gateway Tabs / Accordion -->
+                    <div class="space-y-3">
+                        <!-- Option 1: Credit / Debit Card (Stripe styled) -->
+                        <div class="border-2 rounded-2xl border-black bg-gray-50/40 p-4 transition-all">
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <div class="flex items-center space-x-3">
+                                    <input type="radio" name="payment_method" value="stripe" checked onchange="handlePaymentMethodChange('stripe')"
+                                        class="h-4 w-4 text-black focus:ring-0 accent-black">
+                                    <div>
+                                        <span class="text-xs font-black uppercase tracking-wider text-gray-900 block">Credit / Debit Card (Stripe Secured)</span>
+                                        <span class="text-[11px] text-gray-500">Visa, MasterCard, American Express, UnionPay</span>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-1.5 text-lg text-gray-600">
+                                    <i class="fab fa-cc-visa text-blue-600"></i>
+                                    <i class="fab fa-cc-mastercard text-red-500"></i>
+                                    <i class="fab fa-cc-amex text-cyan-600"></i>
+                                </div>
+                            </label>
+
+                            <div id="stripe-card-fields" class="mt-4 pt-4 border-t border-gray-200 space-y-3">
+                                <div>
+                                    <label class="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1">Card Number</label>
+                                    <div class="relative">
+                                        <input type="text" name="card_number" placeholder="4242 •••• •••• 4242" maxlength="19"
+                                            class="w-full bg-white border border-gray-200 focus:border-black rounded-xl px-4 py-2.5 text-xs font-mono font-bold outline-none">
+                                        <i class="fas fa-lock absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1">Expiration (MM/YY)</label>
+                                        <input type="text" placeholder="12/28" maxlength="5"
+                                            class="w-full bg-white border border-gray-200 focus:border-black rounded-xl px-4 py-2.5 text-xs font-mono font-bold outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1">CVC / CVV</label>
+                                        <input type="password" placeholder="•••" maxlength="4"
+                                            class="w-full bg-white border border-gray-200 focus:border-black rounded-xl px-4 py-2.5 text-xs font-mono font-bold outline-none">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Option 2: Buy Now Pay Later (Klarna / Afterpay) -->
+                        <div class="border-2 rounded-2xl border-gray-200 hover:border-black p-4 transition-all">
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <div class="flex items-center space-x-3">
+                                    <input type="radio" name="payment_method" value="klarna" onchange="handlePaymentMethodChange('klarna')"
+                                        class="h-4 w-4 text-black focus:ring-0 accent-black">
+                                    <div>
+                                        <span class="text-xs font-black uppercase tracking-wider text-gray-900 block">Klarna · 4 Interest-Free Payments</span>
+                                        <span class="text-[11px] text-gray-500">Pay 4 installments of {{ money(total / 4) }}. No hidden fees.</span>
+                                    </div>
+                                </div>
+                                <span class="px-2.5 py-1 bg-pink-100 text-pink-700 text-xs font-black rounded-lg">Klarna.</span>
+                            </label>
+                        </div>
+
+                        <!-- Option 3: PayPal Commerce -->
+                        <div class="border-2 rounded-2xl border-gray-200 hover:border-black p-4 transition-all">
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <div class="flex items-center space-x-3">
+                                    <input type="radio" name="payment_method" value="paypal" onchange="handlePaymentMethodChange('paypal')"
+                                        class="h-4 w-4 text-black focus:ring-0 accent-black">
+                                    <div>
+                                        <span class="text-xs font-black uppercase tracking-wider text-gray-900 block">PayPal Commerce &amp; Credit</span>
+                                        <span class="text-[11px] text-gray-500">Buyer Protection guaranteed on all luxury parcels</span>
+                                    </div>
+                                </div>
+                                <i class="fab fa-paypal text-blue-600 text-2xl"></i>
+                            </label>
+                        </div>
+
+                        <!-- Option 4: Local Regional Mobile Money (M-Pesa, MTN, Airtel) -->
+                        <div class="border-2 rounded-2xl border-gray-200 hover:border-black p-4 transition-all">
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <div class="flex items-center space-x-3">
+                                    <input type="radio" name="payment_method" value="mobile_money" onchange="handlePaymentMethodChange('mobile_money')"
+                                        class="h-4 w-4 text-black focus:ring-0 accent-black">
+                                    <div>
+                                        <span class="text-xs font-black uppercase tracking-wider text-gray-900 block">Regional Mobile Money</span>
+                                        <span class="text-[11px] text-gray-500">MTN MoMo, Orange Money, Airtel, M-Pesa</span>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-1 font-black text-[10px]">
+                                    <span class="px-2 py-0.5 bg-yellow-400 text-black rounded">MTN</span>
+                                    <span class="px-2 py-0.5 bg-orange-500 text-white rounded">OM</span>
+                                </div>
+                            </label>
+
+                            <div id="momo-fields" class="hidden mt-4 pt-4 border-t border-gray-200 space-y-3">
+                                <div>
+                                    <label class="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1">Provider</label>
+                                    <select name="mobile_money_provider" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-bold outline-none">
+                                        <option value="mtn">MTN Mobile Money</option>
+                                        <option value="orange">Orange Money</option>
+                                        <option value="airtel">Airtel Money</option>
+                                        <option value="mpesa">M-Pesa</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1">Subscriber Mobile Number</label>
+                                    <input type="tel" name="mobile_money_phone" placeholder="e.g. +237 670 000 000"
+                                        class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-mono font-bold outline-none">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right: Order Summary Sidebar with Multi-Currency & In-Checkout Gift Wrap -->
+            <div class="lg:col-span-5 sticky top-28 space-y-6">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-200">
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+                        <h3 class="text-base font-black text-gray-900 uppercase tracking-tight">Order Summary</h3>
+                        <a href="{{ url_for('cart') }}" class="text-xs font-bold uppercase tracking-wider text-amber-600 hover:underline">Edit Bag</a>
+                    </div>
+
+                    <!-- Itemized Product List -->
+                    <div class="space-y-4 max-h-72 overflow-y-auto pr-1 divide-y divide-gray-100 mb-6 custom-scrollbar">
+                        {% for item in cart_items %}
+                        <div class="pt-4 first:pt-0 flex items-center justify-between space-x-4">
+                            <div class="flex items-center space-x-3.5">
+                                <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" class="w-14 h-16 rounded-xl object-cover border border-gray-100 flex-shrink-0">
+                                <div>
+                                    <h4 class="font-bold text-xs text-gray-900 line-clamp-1">{{ item.product.name }}</h4>
+                                    <div class="flex items-center space-x-2 text-[10px] text-gray-400 mt-0.5 font-medium">
+                                        <span class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-700 font-bold">{{ item.size }}</span>
+                                        <span>{{ item.color }}</span>
+                                    </div>
+                                    <span class="text-[11px] font-bold text-gray-500 block mt-1">Qty: {{ item.quantity }}</span>
+                                </div>
+                            </div>
+                            <span class="font-black text-xs text-gray-900">{{ money(item.itemTotal) }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Gift Wrap Option in Checkout -->
+                    <div class="mb-6 p-4 rounded-2xl bg-gray-50 border border-gray-200">
+                        <label class="flex items-center justify-between cursor-pointer">
+                            <span class="flex items-center text-xs font-bold text-gray-900">
+                                <input type="checkbox" name="gift_wrapped" value="1" {% if giftWrapped %}checked{% endif %} class="accent-amber-500 w-4 h-4 rounded mr-2">
+                                <i class="fas fa-gift text-amber-500 mr-1.5"></i> Luxury Gift Packaging
+                            </span>
+                            <span class="text-xs font-black text-amber-700">+ $15.00</span>
+                        </label>
+                        <input type="text" name="gift_message" value="{{ giftMessage or '' }}" placeholder="Personalized calligraphy card message (optional)"
+                            class="mt-2.5 w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-black">
+                    </div>
+
+                    <!-- Totals Breakdown -->
+                    <div class="space-y-2.5 pt-4 border-t border-gray-100 text-xs font-medium text-gray-600">
+                        <div class="flex justify-between">
+                            <span>Subtotal</span>
+                            <span class="font-bold text-gray-900">{{ money(subtotal) }}</span>
+                        </div>
+
+                        {% if discount > 0 %}
+                        <div class="flex justify-between text-amber-600 font-bold">
+                            <span>Discount ({{ promo.code if promo else 'PROMO' }})</span>
+                            <span>-{{ money(discount) }}</span>
+                        </div>
+                        {% endif %}
+
+                        <div class="flex justify-between items-center">
+                            <span>Express White-Glove Courier</span>
+                            <span class="font-black text-[10px] text-emerald-700 uppercase bg-emerald-50 px-2 py-0.5 rounded-full">
+                                {{ 'COMPLIMENTARY' if isFreeShipping else money(shippingCost) }}
+                            </span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Estimated VAT / Duties (Destination Tax)</span>
+                            <span class="font-bold text-gray-900">{{ money(taxAmount) }}</span>
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-4 flex justify-between items-baseline">
+                            <div>
+                                <span class="text-sm font-black text-gray-900 uppercase tracking-wider block">Final Total</span>
+                                <span class="text-[10px] text-gray-400">All duties &amp; insurance included</span>
+                            </div>
+                            <span class="text-2xl font-black text-gray-950">{{ money(total) }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Authorize Button -->
                     <button type="submit"
-                        class="mt-8 w-full bg-black text-white py-4 rounded-2xl font-black tracking-widest uppercase text-xs flex items-center justify-center space-x-3 hover:bg-[var(--dynamic-color)] transition-all transform hover:scale-[1.02] shadow-xl hover:shadow-[var(--dynamic-color)]/25 cursor-pointer">
+                        class="mt-8 w-full bg-black text-white py-4 rounded-2xl font-black tracking-widest uppercase text-xs flex items-center justify-center space-x-3 hover:bg-amber-400 hover:text-black transition-all transform hover:scale-[1.02] shadow-2xl cursor-pointer">
                         <i class="fas fa-lock text-xs"></i>
-                        <span>Complete Order (${{ "%.2f"|format(total) }})</span>
+                        <span>Authorize &amp; Complete Order</span>
                     </button>
 
-                    <p class="mt-4 text-center text-[10px] uppercase tracking-widest text-gray-400 font-bold">
-                        Guaranteed 256-Bit SSL Encrypted Payment
-                    </p>
+                    <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-center space-x-4 text-[10px] text-gray-400 uppercase tracking-widest font-bold">
+                        <span><i class="fas fa-undo mr-1"></i> 30-Day Returns</span>
+                        <span>·</span>
+                        <span><i class="fas fa-certificate mr-1"></i> 100% Authentic</span>
+                    </div>
                 </div>
             </div>
+
         </form>
     </div>
 </section>
 
 <script>
-    function togglePhoneInput() {
-        const method = document.querySelector('input[name="payment_method"]:checked').value;
-        const phoneContainer = document.getElementById('phone-container');
-        const phoneInput = document.getElementById('phone_number');
+    // Payment tab switcher
+    function handlePaymentMethodChange(method) {
+        const stripeFields = document.getElementById('stripe-card-fields');
+        const momoFields = document.getElementById('momo-fields');
 
-        if (method === 'mtn' || method === 'orange') {
-            phoneContainer.classList.remove('hidden');
-            phoneInput.setAttribute('required', 'required');
-            phoneInput.focus();
-        } else {
-            phoneContainer.classList.add('hidden');
-            phoneInput.removeAttribute('required');
+        if (stripeFields) {
+            if (method === 'stripe') stripeFields.classList.remove('hidden');
+            else stripeFields.classList.add('hidden');
+        }
+
+        if (momoFields) {
+            if (method === 'mobile_money') momoFields.classList.remove('hidden');
+            else momoFields.classList.add('hidden');
+        }
+    }
+
+    // Toggle VIP password input
+    function toggleAccountPassword(checkbox) {
+        const wrap = document.getElementById('vip-pass-wrap');
+        if (wrap) {
+            if (checkbox.checked) wrap.classList.remove('hidden');
+            else wrap.classList.add('hidden');
+        }
+    }
+
+    // Express Social Checkout simulator
+    function expressSocialCheckout(provider) {
+        fetch('/api/social-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ provider })
+        })
+        .then(res => res.json())
+        .then(() => {
+            if (typeof showNotification === 'function') {
+                showNotification('Authorized via ' + provider.toUpperCase() + '! Autofilling credentials.');
+            }
+            setTimeout(() => window.location.reload(), 600);
+        });
+    }
+
+    // Address Autocomplete Simulator
+    const lookupInput = document.getElementById('address-lookup');
+    const suggestionsBox = document.getElementById('address-suggestions-box');
+    if (lookupInput && suggestionsBox) {
+        lookupInput.addEventListener('input', (e) => {
+            const val = e.target.value.trim();
+            if (val.length < 2) {
+                suggestionsBox.classList.add('hidden');
+                return;
+            }
+
+            fetch(`/api/address/suggest?q=${encodeURIComponent(val)}`)
+                .then(res => res.json())
+                .then(addresses => {
+                    suggestionsBox.innerHTML = addresses.map(a => `
+                        <div onclick='selectSuggestedAddress(${JSON.stringify(a)})' class="p-3 hover:bg-gray-50 cursor-pointer flex items-center space-x-2">
+                            <i class="fas fa-map-pin text-amber-500 text-xs"></i>
+                            <div>
+                                <p class="font-bold text-gray-900">${a.street}</p>
+                                <p class="text-[10px] text-gray-500">${a.city}, ${a.country} ${a.postal}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                    suggestionsBox.classList.remove('hidden');
+                });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!lookupInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                suggestionsBox.classList.add('hidden');
+            }
+        });
+    }
+
+    function selectSuggestedAddress(addr) {
+        document.getElementById('ship-street').value = addr.street;
+        document.getElementById('ship-city').value = addr.city;
+        document.getElementById('ship-postal').value = addr.postal;
+        document.getElementById('ship-country').value = addr.country;
+        if (lookupInput) lookupInput.value = `${addr.street}, ${addr.city}`;
+        if (suggestionsBox) suggestionsBox.classList.add('hidden');
+        if (typeof showNotification === 'function') {
+            showNotification('Address validated & auto-filled!');
         }
     }
 </script>

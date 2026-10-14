@@ -160,7 +160,7 @@
                     </div>
                     <div class="w-full flex justify-between items-center mt-3 pt-3 border-t border-gray-50">
                         <span class="text-base font-black text-gray-900">
-                            ${{ "%.2f"|format(product.price) }}
+                            {{ money(product.price) }}
                         </span>
                         <a href="{{ url_for('add_to_wishlist', id=product.id) }}"
                             title="Add to wishlist"

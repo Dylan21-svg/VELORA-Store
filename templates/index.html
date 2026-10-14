@@ -153,12 +153,17 @@
 
                 <div class="p-t-14 mt-6 flex justify-between items-start px-2">
                     <div>
+                        {% if product.badge %}
+                        <span class="inline-block px-2 py-0.5 rounded bg-black text-white text-[9px] font-black uppercase tracking-wider mb-1">
+                            {{ product.badge }}
+                        </span>
+                        {% endif %}
                         <a href="{{ url_for('product', id=product.id) }}"
                             class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6 block text-lg font-bold hover:text-[var(--dynamic-color)] transition-colors">
                             {{ product.name }}
                         </a>
-                        <span class="stext-105 cl3 block text-gray-400 font-medium mt-1">
-                            ${{ "%.2f"|format(product.price) }}
+                        <span class="stext-105 cl3 block text-gray-900 font-black mt-1">
+                            {{ money(product.price) }}
                         </span>
                     </div>
                     <div class="block2-txt-child2 flex-r p-t-3">
